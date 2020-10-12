@@ -27,8 +27,7 @@ depopts: [
   "ocaml-freestanding-riscv"
 ]
 conflicts: [
-  "mirage-xen" {< "3.1.0"}
-  "ocaml-freestanding" {< "0.4.1"}
+  "ocaml-freestanding-riscv" {< "0.4.1"}
 ]
 description: """
 Mirage-crypto provides symmetric ciphers (DES, AES, RC4, ChaCha20/Poly1305), and
