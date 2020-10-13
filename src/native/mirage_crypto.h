@@ -47,7 +47,7 @@ extern struct _mc_cpu_features mc_detected_cpu_features;
 
 #endif /* __mc_ACCELERATE__ */
 
-#if defined (__x86_64__) || defined (__aarch64__) || defined (__powerpc64__)
+#if defined (__x86_64__) || defined (__aarch64__) || defined (__powerpc64__) || defined (__riscv)
 #define ARCH_64BIT
 #elif defined (__i386__) || defined (__arm__)
 #define ARCH_32BIT
