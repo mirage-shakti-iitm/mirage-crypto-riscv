@@ -32,6 +32,10 @@ static inline uint32_t read_virtual_count () {
 }
 #endif /* arm */
 
+#if defined (__riscv)
+#include <ocaml-boot-riscv.h>
+#endif
+
 #if defined (__aarch64__)
 #define	isb()		__asm __volatile("isb" : : : "memory")
 static inline uint64_t read_virtual_count(void)
@@ -62,6 +66,8 @@ CAMLprim value mc_cycle_counter (value __unused(unit)) {
   return Val_long (read_virtual_count ());
 #elif defined(__powerpc64__)
   return Val_long (read_cycle_counter ());
+#elif defined(__riscv)
+  return Val_long (riscv_cycle_counter());
 #else
 #error ("No known cycle-counting instruction.")
 #endif
