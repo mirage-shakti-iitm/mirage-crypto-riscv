@@ -2,6 +2,21 @@ open Uncommon
 
 module S = struct
 
+  (* XXX old block-level sig, remove *)
+  module type Raw = sig
+
+    type ekey
+    type dkey
+
+    val e_of_secret : Cstruct.t -> ekey
+    val d_of_secret : Cstruct.t -> dkey
+
+    val key_sizes  : int array
+    val block_size : int
+    val encrypt_block : key:ekey -> Cstruct.t -> Cstruct.t -> unit
+    val decrypt_block : key:dkey -> Cstruct.t -> Cstruct.t -> unit
+  end
+
   module type Core = sig
 
     type ekey
@@ -63,21 +78,25 @@ module S = struct
   end
 
   module type GCM = sig
-    include Aead.AEAD
+    type key
+    type result = { message : Cstruct.t ; tag : Cstruct.t }
     val of_secret : Cstruct.t -> key
 
     val key_sizes  : int array
     val block_size : int
-    val tag_size   : int
+    val encrypt : key:key -> iv:Cstruct.t -> ?adata:Cstruct.t -> Cstruct.t -> result
+    val decrypt : key:key -> iv:Cstruct.t -> ?adata:Cstruct.t -> Cstruct.t -> result
   end
 
   module type CCM = sig
-    include Aead.AEAD
+    type key
     val of_secret : maclen:int -> Cstruct.t -> key
 
     val key_sizes  : int array
     val block_size : int
     val mac_sizes  : int array
+    val encrypt : key:key -> nonce:Cstruct.t -> ?adata:Cstruct.t -> Cstruct.t -> Cstruct.t
+    val decrypt : key:key -> nonce:Cstruct.t -> ?adata:Cstruct.t -> Cstruct.t -> Cstruct.t option
   end
 end
 
@@ -93,7 +112,9 @@ module Counters = struct
     val unsafe_count_into : ctr -> Native.buffer -> int -> blocks:int -> unit
   end
 
-  let _tmp = Bytes.make 16 '\x00'
+  let _tmp = Bytes.make 32 '\x00'
+
+  open EndianBytes.BigEndian_unsafe
 
   module C64be = struct
     type ctr = int64
@@ -101,7 +122,7 @@ module Counters = struct
     let of_cstruct cs = BE.get_uint64 cs 0
     let add = Int64.add
     let unsafe_count_into t buf off ~blocks =
-      Bytes.set_int64_be _tmp 0 t;
+      set_int64 _tmp 0 t;
       Native.count8be _tmp buf off ~blocks
   end
 
@@ -114,7 +135,7 @@ module Counters = struct
       let flip = if Int64.logxor w0 w0' < 0L then w0' > w0 else w0' < w0 in
       ((if flip then Int64.succ w1 else w1), w0')
     let unsafe_count_into (w1, w0) buf off ~blocks =
-      Bytes.set_int64_be _tmp 0 w1; Bytes.set_int64_be _tmp 8 w0;
+      set_int64 _tmp 0 w1; set_int64 _tmp 8 w0;
       Native.count16be _tmp buf off ~blocks
   end
 
@@ -124,14 +145,64 @@ module Counters = struct
       let hi = 0xffffffff00000000L and lo = 0x00000000ffffffffL in
       (w1, Int64.(logor (logand hi w0) (add n w0 |> logand lo)))
     let unsafe_count_into (w1, w0) buf off ~blocks =
-      Bytes.set_int64_be _tmp 0 w1; Bytes.set_int64_be _tmp 8 w0;
+      set_int64 _tmp 0 w1; set_int64 _tmp 8 w0;
       Native.count16be4 _tmp buf off ~blocks
   end
 end
 
+
 module Modes = struct
 
+  module CCM_of (C : S.Raw) : S.CCM = struct
+
+    assert (C.block_size = 16)
+
+    type key = C.ekey * int
+
+    let mac_sizes = [| 4; 6; 8; 10; 12; 14; 16 |]
+
+    let of_secret ~maclen sec =
+      if Array.mem maclen mac_sizes then
+        (C.e_of_secret sec, maclen)
+      else invalid_arg "CCM: MAC length %d" maclen
+
+    let (key_sizes, block_size) = C.(key_sizes, block_size)
+
+    let encrypt ~key:(key, maclen) ~nonce ?adata cs =
+      Ccm.generation_encryption ~cipher:C.encrypt_block ~key ~nonce ~maclen ?adata cs
+
+    let decrypt ~key:(key, maclen) ~nonce ?adata cs =
+      Ccm.decryption_verification ~cipher:C.encrypt_block ~key ~nonce ~maclen ?adata cs
+
+  end
+
+end
+
+module Modes2 = struct
+
   open Cstruct
+
+  module Raw_of (Core : S.Core) : S.Raw = struct
+
+    type ekey = Core.ekey
+    type dkey = Core.dkey
+
+    let e_of_secret = Core.e_of_secret
+    let d_of_secret = Core.d_of_secret
+
+    let key_sizes  = Core.key
+    let block_size = Core.block
+
+    let encrypt_block ~key:key src dst =
+      if src.len < block_size || dst.len < block_size then
+        invalid_arg "src len %d, dst len %d" src.len dst.len;
+      Core.encrypt ~key ~blocks:1 src.buffer src.off dst.buffer dst.off
+
+    let decrypt_block ~key:key src dst =
+      if src.len < block_size || dst.len < block_size then
+        invalid_arg "src len %d, dst len %d" src.len dst.len;
+      Core.decrypt ~key ~blocks:1 src.buffer src.off dst.buffer dst.off
+  end
 
   module ECB_of (Core : S.Core) : S.ECB = struct
 
@@ -234,21 +305,19 @@ module Modes = struct
     type key
     val derive  : Cstruct.t -> key
     val digesti : key:key -> (Cstruct.t Uncommon.iter) -> Cstruct.t
-    val tagsize : int
   end = struct
     type key = bytes
     let keysize = Native.GHASH.keysize ()
-    let tagsize = 16
     let derive cs =
-      assert (cs.len >= tagsize);
+      assert (cs.len >= 16);
       let k = Bytes.create keysize in
       Native.GHASH.keyinit cs.buffer cs.off k; k
-    let _cs = create_unsafe tagsize
-    let hash0 = Bytes.make tagsize '\x00'
+    let _cs = create_unsafe 16
+    let hash0 = Bytes.make 16 '\x00'
     let digesti ~key i = (* Clobbers `_cs`! *)
       let res = Bytes.copy hash0 in
       i (fun cs -> Native.GHASH.ghash key res cs.buffer cs.off cs.len);
-      blit_from_bytes res 0 _cs 0 tagsize; _cs
+      blit_from_bytes res 0 _cs 0 16; _cs
   end
 
   module GCM_of (C : S.Core) : S.GCM = struct
@@ -257,8 +326,8 @@ module Modes = struct
     module CTR = CTR_of (C) (Counters.C128be32)
 
     type key = { key : C.ekey ; hkey : GHASH.key }
+    type result = { message : Cstruct.t ; tag : Cstruct.t }
 
-    let tag_size = GHASH.tagsize
     let key_sizes, block_size = C.(key, block)
     let z128, h = create block_size, create block_size
 
@@ -271,63 +340,29 @@ module Modes = struct
     let pack64s = let _cs = create_unsafe 16 in fun a b ->
                     BE.set_uint64 _cs 0 a; BE.set_uint64 _cs 8 b; _cs
 
-    let counter ~hkey nonce = match len nonce with
-      | 0 -> invalid_arg "GCM: invalid nonce of length 0"
-      | 12 -> let (w1, w2) = BE.get_uint64 nonce 0, BE.get_uint32 nonce 8 in
+    let counter ~hkey iv = match len iv with
+      | 0 -> invalid_arg "GCM: invalid IV of length 0"
+      | 12 -> let (w1, w2) = BE.get_uint64 iv 0, BE.get_uint32 iv 8 in
               (w1, Int64.(shift_left (of_int32 w2) 32 |> add 1L))
       | _  -> CTR.ctr_of_cstruct @@
-                GHASH.digesti ~key:hkey @@ iter2 nonce (pack64s 0L (bits64 nonce))
+                GHASH.digesti ~key:hkey @@ iter2 iv (pack64s 0L (bits64 iv))
 
     let tag ~key ~hkey ~ctr ?(adata=Cstruct.empty) cdata =
       CTR.encrypt ~key ~ctr @@
         GHASH.digesti ~key:hkey @@
           iter3 adata cdata (pack64s (bits64 adata) (bits64 cdata))
 
-    let authenticate_encrypt ~key:{ key; hkey } ~nonce ?adata data =
-      let ctr   = counter ~hkey nonce in
+    let encrypt ~key:{ key; hkey } ~iv ?adata data =
+      let ctr   = counter ~hkey iv in
       let cdata = CTR.(encrypt ~key ~ctr:(add_ctr ctr 1L) data) in
-      let ctag  = tag ~key ~hkey ~ctr ?adata cdata in
-      Cstruct.append cdata ctag
+      { message = cdata ; tag = tag ~key ~hkey ~ctr ?adata cdata }
 
-    let authenticate_decrypt ~key:{ key; hkey } ~nonce ?adata cdata =
-      let ctr  = counter ~hkey nonce in
-      if Cstruct.len cdata < tag_size then
-        None
-      else
-        let cipher, tag_data =
-          Cstruct.split cdata (Cstruct.len cdata - tag_size)
-        in
-        let data = CTR.(encrypt ~key ~ctr:(add_ctr ctr 1L) cipher) in
-        let ctag = tag ~key ~hkey ~ctr ?adata cipher in
-        if Eqaf_cstruct.equal tag_data ctag then Some data else None
+    let decrypt ~key:{ key; hkey } ~iv ?adata cdata =
+      let ctr  = counter ~hkey iv in
+      let data = CTR.(encrypt ~key ~ctr:(add_ctr ctr 1L) cdata) in
+      { message = data ; tag = tag ~key ~hkey ~ctr ?adata cdata }
   end
 
-  module CCM_of (C : S.Core) : S.CCM = struct
-
-    let _ = assert (C.block = 16)
-
-    type key = { key : C.ekey ; maclen : int }
-
-    let mac_sizes = [| 4; 6; 8; 10; 12; 14; 16 |]
-
-    let of_secret ~maclen sec =
-      if Array.mem maclen mac_sizes then
-        { key = C.e_of_secret sec ; maclen }
-      else invalid_arg "CCM: MAC length %d" maclen
-
-    let (key_sizes, block_size) = C.(key, block)
-
-    let cipher ~key src dst =
-      if src.len < block_size || dst.len < block_size then
-        invalid_arg "src len %d, dst len %d" src.len dst.len;
-      C.encrypt ~key ~blocks:1 src.buffer src.off dst.buffer dst.off
-
-    let authenticate_encrypt ~key:{key; maclen} ~nonce ?(adata = Cstruct.empty) cs =
-      Ccm.generation_encryption ~cipher ~key ~nonce ~maclen ~adata cs
-
-    let authenticate_decrypt ~key:{key; maclen} ~nonce ?(adata = Cstruct.empty) cs =
-      Ccm.decryption_verification ~cipher ~key ~nonce ~maclen ~adata cs
-  end
 end
 
 module AES = struct
@@ -369,11 +404,12 @@ module AES = struct
 
   end
 
-  module ECB = Modes.ECB_of (Core)
-  module CBC = Modes.CBC_of (Core)
-  module CTR = Modes.CTR_of (Core) (Counters.C128be)
-  module GCM = Modes.GCM_of (Core)
-  module CCM = Modes.CCM_of (Core)
+  module ECB = Modes2.ECB_of (Core)
+  module CBC = Modes2.CBC_of (Core)
+  module CTR = Modes2.CTR_of (Core) (Counters.C128be)
+  module GCM = Modes2.GCM_of (Core)
+
+  module CCM = Modes.CCM_of (Modes2.Raw_of(Core))
 
 end
 
@@ -409,15 +445,14 @@ module DES = struct
     let decrypt = encrypt
   end
 
-  module ECB = Modes.ECB_of (Core)
-  module CBC = Modes.CBC_of (Core)
-  module CTR = Modes.CTR_of (Core) (Counters.C64be)
+  module ECB = Modes2.ECB_of (Core)
+  module CBC = Modes2.CBC_of (Core)
+  module CTR = Modes2.CTR_of (Core) (Counters.C64be)
 
 end
 
 let accelerated =
   let flags =
-    (match Native.misc_mode () with 1 -> [`XOR] | _ -> []) @
     (match Native.AES.mode () with 1 -> [`AES] | _ -> []) @
     (match Native.GHASH.mode () with 1 -> [`GHASH] | _ -> []) in
-  flags
+  match flags with [] -> [] | _ -> `XOR :: flags

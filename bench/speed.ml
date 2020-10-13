@@ -275,18 +275,18 @@ let benchmarks = [
 
   bm "aes-128-gcm" (fun name ->
     let key = AES.GCM.of_secret (Mirage_crypto_rng.generate 16)
-    and nonce = Mirage_crypto_rng.generate 12 in
-    throughput name (fun cs -> AES.GCM.authenticate_encrypt ~key ~nonce cs));
+    and iv  = Mirage_crypto_rng.generate 12 in
+    throughput name (fun cs -> AES.GCM.encrypt ~key ~iv cs));
 
   bm "aes-128-ghash" (fun name ->
     let key = AES.GCM.of_secret (Mirage_crypto_rng.generate 16)
-    and nonce = Mirage_crypto_rng.generate 12 in
-    throughput name (fun cs -> AES.GCM.authenticate_encrypt ~key ~nonce ~adata:cs Cstruct.empty));
+    and iv  = Mirage_crypto_rng.generate 12 in
+    throughput name (fun cs -> AES.GCM.encrypt ~key ~iv ~adata:cs Cstruct.empty));
 
   bm "aes-128-ccm" (fun name ->
     let key   = AES.CCM.of_secret ~maclen:16 (Mirage_crypto_rng.generate 16)
     and nonce = Mirage_crypto_rng.generate 10 in
-    throughput name (fun cs -> AES.CCM.authenticate_encrypt ~key ~nonce cs));
+    throughput name (fun cs -> AES.CCM.encrypt ~key ~nonce cs));
 
   bm "aes-192-ecb" (fun name ->
     let key = AES.ECB.of_secret (Mirage_crypto_rng.generate 24) in
@@ -304,6 +304,11 @@ let benchmarks = [
     let open Mirage_crypto_rng.Fortuna in
     let g = create () in
     reseed ~g (Cstruct.of_string "abcd") ;
+    throughput name (fun cs -> generate ~g (Cstruct.len cs))) ;
+
+  bm "unix rng" (fun name ->
+    let open Mirage_crypto_rng_unix.Getrandom in
+    let g = create () in
     throughput name (fun cs -> generate ~g (Cstruct.len cs))) ;
 
   bm "md5"    (fun name -> throughput name MD5.digest) ;
@@ -329,8 +334,7 @@ let runv fs =
 
 let () =
   let seed = Cstruct.of_string "abcd" in
-  let g = Mirage_crypto_rng.(create ~seed (module Fortuna)) in
-  Mirage_crypto_rng.set_default_generator g;
+  Mirage_crypto_rng.(generator := create ~seed (module Fortuna));
   match Array.to_list Sys.argv with
   | _::(_::_ as args) -> begin
       try

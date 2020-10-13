@@ -81,11 +81,10 @@ let key_of_secret group ~s =
  *)
 let rec gen_key ?g ?bits ({ p; q; _ } as group) =
   let pb = Z.numbits p in
-  let s =
-    imin (Option.value bits ~default:pb |> exp_size)
-         (Option.fold ~none:pb ~some:Z.numbits q)
-    |> Z_extra.gen_bits ?g ~msb:1
-  in
+  let s = Option.(
+    imin (get_or exp_size pb bits)
+         (q >>| Z.numbits |> get ~def:pb))
+    |> Z_extra.gen_bits ?g ~msb:1 in
   try key_of_secret_z group s with Invalid_key -> gen_key ?g ?bits group
 
 let shared { group ; x } cs =
@@ -106,10 +105,15 @@ module Group = struct
   (* Safe-prime-style group: p = 2q + 1 && gg = 2 && gg^q = 1 mod p *)
   let s_group ~p =
     let p = f p in
-    { p ; gg = Z.(~$2) ; q = Some Z.(pred p / ~$2) }
+    match group ~p ~gg:Z.(~$2) ~q:Z.(pred p / ~$2) () with
+    | Error (`Msg m) -> invalid_arg "bad group %s" m
+    | Ok g -> g
 
   (* Any old group. *)
-  let group ~p ~gg ~q = { p = f p ; gg = f gg ; q = Some (f q) }
+  let group ~p ~gg ~q =
+    match group ~p:(f p) ~gg:(f gg) ~q:(f q) () with
+    | Error (`Msg m) -> invalid_arg "bad group %s" m
+    | Ok g -> g
 
   (* RFC2409 *)
 

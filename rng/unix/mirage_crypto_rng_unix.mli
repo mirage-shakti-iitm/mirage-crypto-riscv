@@ -1,13 +1,16 @@
 (** {b RNG} seeding on {b Unix}.
 
-    This module initializes a Fortuna RNG with [getrandom()], and CPU RNG.
-    On BSD systems (FreeBSD, OpenBSD, macOS) [getentropy ()] is used instead
-    of [getrandom ()]. On Windows 10 or higher, [BCryptGenRandom()] is used
-    with the default RNG. Windows 8 or lower are not supported by this library.
+    This module provides the RNG [Getrandom] which calls [getrandom ()] for each
+    [generate] request. On BSD systems (FreeBSD, OpenBSD, macOS) [getentropy ()]
+    is used instead.
+
+    Calling {{!initialize}initialize} is enough to bring the RNG into a working
+    state.
+
+    [initialize] is idempotent as long as the default generator is unchanged.
+    It is harmless to call it several times.
 *)
 
-(** [initialize ()] will bring the RNG into a working state. *)
-val initialize : unit -> unit
+module Getrandom : Mirage_crypto_rng.Generator
 
-(** [getrandom size] returns a buffer of [size] filled with random bytes. *)
-val getrandom : int -> Cstruct.t
+val initialize : unit -> unit

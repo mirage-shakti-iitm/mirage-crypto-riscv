@@ -7,11 +7,6 @@ open Common
 let two = Z.(~$2)
 and three = Z.(~$3)
 
-(* A constant-time [find_uint8] with a default value. *)
-let ct_find_uint8 ~default ?off ~f cs =
-  let res = Eqaf_cstruct.find_uint8 ?off ~f cs in
-  Eqaf.select_int (res + 1) default res
-
 let (&.) f g = fun h -> f (g h)
 
 module Hash = Mirage_crypto.Hash
@@ -134,7 +129,7 @@ let priv_of_exp ?g ?(attempts=100) ~e ~d ~n () =
           else
             go ax2 (i' - 1)
       in
-      Option.map Z.(gcd n &. pred) (go Z.(powm (Z_extra.gen ?g n) t n) s)
+      Option.(go Z.(powm (Z_extra.gen ?g n) t n) s >>| Z.(gcd n &. pred))
     in
     if attempts > 0 then
       Z_extra.strip_factor ~f:two Z.(e * d |> pred) >>= function
@@ -240,7 +235,7 @@ module PKCS1 = struct
 
   let unpad ~mark ~is_pad cs =
     let f = not &. is_pad in
-    let i = ct_find_uint8 ~default:2 ~off:2 ~f cs in
+    let i = Cs.ct_find_uint8 ~off:2 ~f cs |> Option.get ~def:2 in
     let c1 = get_uint8 cs 0 = 0x00
     and c2 = get_uint8 cs 1 = mark
     and c3 = get_uint8 cs i = 0x00
@@ -249,13 +244,7 @@ module PKCS1 = struct
       Some (sub cs (i + 1) (len cs - i - 1))
     else None
 
-  let pad_01    =
-    let padding size =
-      let buf = Cstruct.create size in
-      Cstruct.memset buf 0xff;
-      buf
-    in
-    pad ~mark:0x01 ~padding
+  let pad_01    = pad ~mark:0x01 ~padding:(Cs.create ~init:0xff)
   let pad_02 ?g = pad ~mark:0x02 ~padding:(generate_with ?g ~f:((<>) 0x00))
 
   let unpad_01 = unpad ~mark:0x01 ~is_pad:((=) 0xff)
@@ -301,14 +290,10 @@ module PKCS1 = struct
     sig_encode ~crt_hardening ?mask ~key msg'
 
   let verify ~hashp ~key ~signature msg =
-    let (>>=) = Option.bind
-    and (>>|) = Fun.flip Option.map
-    in
-    Option.value
-      (sig_decode ~key signature >>= fun cs ->
-       detect cs >>| fun (hash, asn) ->
-       hashp hash && Eqaf_cstruct.equal Cs.(asn <+> digest_or ~hash msg) cs)
-      ~default:false
+    let open Option in
+    ( sig_decode ~key signature >>= fun cs -> detect cs >>| fun (hash, asn) ->
+        hashp hash && Eqaf_cstruct.equal Cs.(asn <+> digest_or ~hash msg) cs )
+    |> get ~def:false
 
   let min_key hash =
     (len (asn_of_hash hash) + Hash.digest_size hash + min_pad + 2) * 8 + 1
@@ -344,7 +329,7 @@ module OAEP (H : Hash.S) = struct
 
   let eme_oaep_encode ?g ?(label = Cstruct.empty) k msg =
     let seed  = Mirage_crypto_rng.generate ?g hlen
-    and pad   = Cstruct.create (max_msg_bytes k - len msg) in
+    and pad   = Cs.create (max_msg_bytes k - len msg) in
     let db    = cat [ H.digest label ; pad ; bx01 ; msg ] in
     let mdb   = MGF.mask ~seed db in
     let mseed = MGF.mask ~seed:mdb seed in
@@ -353,7 +338,8 @@ module OAEP (H : Hash.S) = struct
   let eme_oaep_decode ?(label = Cstruct.empty) msg =
     let (b0, ms, mdb) = Cs.split3 msg 1 hlen in
     let db = MGF.mask ~seed:(MGF.mask ~seed:mdb ms) mdb in
-    let i  = ct_find_uint8 ~default:0 ~off:hlen ~f:((<>) 0x00) db in
+    let i  = Cs.ct_find_uint8 ~off:hlen ~f:((<>) 0x00) db |> Option.get ~def:0
+    in
     let c1 = Eqaf_cstruct.equal (sub db 0 hlen) H.(digest label)
     and c2 = get_uint8 b0 0 = 0x00
     and c3 = get_uint8 db i = 0x01 in
@@ -390,7 +376,7 @@ module PSS (H: Hash.S) = struct
 
   let b0mask embits = 0xff lsr ((8 - embits mod 8) mod 8)
 
-  let zero_8 = Cstruct.create 8
+  let zero_8 = Cs.create 8
 
   let digest ~salt msg = H.digesti @@ iter3 zero_8 (H1.digest_or msg) salt
 
@@ -398,7 +384,7 @@ module PSS (H: Hash.S) = struct
     let n    = emlen // 8
     and salt = Mirage_crypto_rng.generate ?g slen in
     let h    = digest ~salt msg in
-    let db   = cat [ Cstruct.create (n - slen - hlen - 2) ; bx01 ; salt ] in
+    let db   = cat [ Cs.create (n - slen - hlen - 2) ; bx01 ; salt ] in
     let mdb  = MGF.mask ~seed:h db in
     set_uint8 mdb 0 @@ get_uint8 mdb 0 land b0mask emlen ;
     cat [ mdb ; h ; bxbc ]
@@ -409,7 +395,7 @@ module PSS (H: Hash.S) = struct
     set_uint8 db 0 (get_uint8 db 0 land b0mask emlen) ;
     let salt = shift db (len db - slen) in
     let h'   = digest ~salt msg
-    and i    = ct_find_uint8 ~default:0 ~f:((<>) 0x00) db in
+    and i    = Cs.ct_find_uint8 ~f:((<>) 0x00) db |> Option.get ~def:0 in
     let c1 = lnot (b0mask emlen) land get_uint8 mdb 0 = 0x00
     and c2 = i = em.len - hlen - slen - 2
     and c3 = get_uint8 db  i = 0x01
