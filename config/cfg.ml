@@ -1,4 +1,5 @@
-let std_flags = ["--std=c99"; "-Wall"; "-Wextra"; "-Wpedantic"; "-O3"; "-I/home/sai/.opam/4.11.1+riscv/riscv-sysroot/include/ocaml-boot-riscv"]
+let std_flags = ["--std=c99"; "-Wall"; "-Wextra"; "-Wpedantic"; "-I/home/sai/.opam/4.11.1+riscv/riscv-sysroot/include/ocaml-boot-riscv"] 
+(* Removed -O3 flag *)
 
 let _ =
   let c = Configurator.V1.create "mirage-crypto" in
@@ -14,7 +15,7 @@ let _ =
   let ent_flags =
     match arch with
     (* | "x86_64" | "amd64" | "x86" -> [ "-DENTROPY"; "-mrdrnd"; "-mrdseed" ] *)
-    | _ -> []
+    | _ -> ["-DENTROPY"]
   in
   let fs = std_flags @ ent_flags @ accelerate_flags in
   Format.(printf "(@[%a@])@.%!" (fun ppf -> List.iter (fprintf ppf "%s@ ")) fs)

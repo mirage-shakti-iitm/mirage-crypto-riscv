@@ -1,10 +1,22 @@
 #include "mirage_crypto.h"
 
 #ifdef __mc_detect_features__
+struct _mc_cpu_features mc_detected_cpu_features = { 0 };
+
+#if defined (__riscv)
+CAMLprim value
+mc_detect_cpu_features (__unit ()) {
+  mc_detected_cpu_features.pclmul = 0;
+  mc_detected_cpu_features.ssse3 = 0;
+  mc_detected_cpu_features.aesni = 0;
+  mc_detected_cpu_features.rdrand = 0;
+  mc_detected_cpu_features.rdseed = 1;
+  return Val_unit;
+}
+
+#else /* __riscv */
 
 #include <cpuid.h>
-
-struct _mc_cpu_features mc_detected_cpu_features = { 0 };
 
 CAMLprim value
 mc_detect_cpu_features (__unit ()) {
@@ -32,6 +44,7 @@ mc_detect_cpu_features (__unit ()) {
 
   return Val_unit;
 }
+#endif /* __riscv */
 
 #else /* __mc_detect_features__ */
 
