@@ -18,7 +18,7 @@ depends: [
   "ocaml-riscv" {>= "4.08.0"}
   "dune" {>= "1.7"}
   "dune-configurator" {>= "2.0.0"}
-  "ounit" {with-test}
+  "ounit-riscv" {with-test}
   "cstruct-riscv" {>="3.2.0"}
   "eqaf-riscv" {>= "0.7"}
 ]
