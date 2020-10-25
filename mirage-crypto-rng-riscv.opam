@@ -24,7 +24,7 @@ depends: [
   "ounit" {with-test}
   "randomconv-riscv" {with-test & >= "0.1.3"}
 # lwt sublibrary
-  "mtime-riscv"
+#  "mtime-riscv"
   "lwt-riscv" {>= "4.0.0"}
 ]
 conflicts: [ "mirage-runtime-riscv" {< "3.8.0"} ]
