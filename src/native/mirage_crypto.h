@@ -51,6 +51,12 @@ extern struct _mc_cpu_features mc_detected_cpu_features;
 #define ARCH_64BIT
 #elif defined (__i386__) || defined (__arm__)
 #define ARCH_32BIT
+#elif defined (__riscv)
+#if __riscv_xlen == 64
+#define ARCH_64BIT
+#elif __riscv_xlen == 32
+#define ARCH_32BIT
+#endif
 #else
 #error "unsupported platform"
 #endif
