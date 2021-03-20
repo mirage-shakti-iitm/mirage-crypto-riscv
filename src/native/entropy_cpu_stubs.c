@@ -32,6 +32,11 @@ static inline uint32_t read_virtual_count () {
 }
 #endif /* arm */
 
+#if defined (__riscv)
+#include <ocaml-boot-riscv.h>
+#define random_t unsigned long long
+#endif
+
 #if defined (__aarch64__)
 #define	isb()		__asm __volatile("isb" : : : "memory")
 static inline uint64_t read_virtual_count(void)
@@ -62,6 +67,8 @@ CAMLprim value mc_cycle_counter (value __unused(unit)) {
   return Val_long (read_virtual_count ());
 #elif defined(__powerpc64__)
   return Val_long (read_cycle_counter ());
+#elif defined(__riscv)
+  return Val_long (riscv_cycle_counter());
 #else
 #error ("No known cycle-counting instruction.")
 #endif
@@ -79,6 +86,9 @@ static int __cpu_rng = RNG_NONE;
 
 static void detect () {
 #ifdef __mc_ENTROPY__
+  #if defined (__riscv)
+  __cpu_rng |= RNG_RDSEED;
+  #else /* __riscv */ 
   random_t r = 0;
 
   if (mc_detected_cpu_features.rdrand)
@@ -98,16 +108,22 @@ static void detect () {
         __cpu_rng |= RNG_RDSEED;
         break;
       }
+  #endif /* __riscv */
 #endif
 }
 
 CAMLprim value mc_cpu_rdseed (value __unused(unit)) {
 #ifdef __mc_ENTROPY__
+  #if defined (__riscv)
+  random_t r = 260511;
+  return Val_long(r);
+  #else /* __riscv */
   random_t r = 0;
   int ok = 0;
   int i = RETRIES;
   do { ok = _rdseed_step (&r); _mm_pause (); } while ( !(ok | !--i) );
   return Val_long(r);
+  #endif /* __riscv */
 #else
   /* ARM: CPU-assisted randomness here. */
   return Val_long (0);
@@ -116,11 +132,16 @@ CAMLprim value mc_cpu_rdseed (value __unused(unit)) {
 
 CAMLprim value mc_cpu_rdrand (value __unused(unit)) {
 #ifdef __mc_ENTROPY__
+  #if defined (__riscv)
+  random_t r = 260511;
+  return Val_long(r);
+  #else /* __riscv */
   random_t r = 0;
   int ok = 0;
   int i = RETRIES;
   do { ok = _rdrand_step (&r); } while ( !(ok | !--i) );
   return Val_long(r);
+  #endif /* __riscv */
 #else
   /* ARM: CPU-assisted randomness here. */
   return Val_long (0);
