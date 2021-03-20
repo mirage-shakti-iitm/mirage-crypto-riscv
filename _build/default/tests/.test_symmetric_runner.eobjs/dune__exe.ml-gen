@@ -1,0 +1,14 @@
+(** @canonical Dune__exe.Test_base *)
+module Test_base = Dune__exe__Test_base
+
+(** @canonical Dune__exe.Test_cipher *)
+module Test_cipher = Dune__exe__Test_cipher
+
+(** @canonical Dune__exe.Test_hash *)
+module Test_hash = Dune__exe__Test_hash
+
+(** @canonical Dune__exe.Test_hmac *)
+module Test_hmac = Dune__exe__Test_hmac
+
+(** @canonical Dune__exe.Test_symmetric_runner *)
+module Test_symmetric_runner = Dune__exe__Test_symmetric_runner

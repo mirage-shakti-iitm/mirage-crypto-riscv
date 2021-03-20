@@ -1,0 +1,14 @@
+(** @canonical Dune__exe.Test_dh *)
+module Test_dh = Dune__exe__Test_dh
+
+(** @canonical Dune__exe.Test_dsa *)
+module Test_dsa = Dune__exe__Test_dsa
+
+(** @canonical Dune__exe.Test_numeric *)
+module Test_numeric = Dune__exe__Test_numeric
+
+(** @canonical Dune__exe.Test_pk_runner *)
+module Test_pk_runner = Dune__exe__Test_pk_runner
+
+(** @canonical Dune__exe.Test_rsa *)
+module Test_rsa = Dune__exe__Test_rsa
