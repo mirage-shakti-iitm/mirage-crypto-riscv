@@ -23,7 +23,7 @@ depends: [
   "eqaf-riscv" {>= "0.7"}
 ]
 depopts: [
-  "mirage-riscv"
+  "mirage-riscv-riscv"
   "ocaml-freestanding-riscv"
 ]
 conflicts: [
