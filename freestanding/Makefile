@@ -1,6 +1,6 @@
-PKG_CONFIG_PATH := $(shell opam config var prefix)/lib/pkgconfig
+PKG_CONFIG_PATH := $(shell opam config var prefix)/riscv-sysroot/lib/pkgconfig
 
-EXISTS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --exists ocaml-freestanding; echo $$?)
+EXISTS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --exists ocaml-freestanding-riscv; echo $$?)
 
 .PHONY: all clean
 all: libmirage_crypto_freestanding_stubs.a
@@ -9,8 +9,8 @@ ifeq ($(EXISTS), 1)
 libmirage_crypto_freestanding_stubs.a:
 	touch $@
 else
-CC ?= cc
-FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding)
+CC ?= riscv64-unknown-elf-gcc
+FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv)
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
 CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS)
 
