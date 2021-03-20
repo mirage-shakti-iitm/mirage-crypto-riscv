@@ -16,12 +16,12 @@ let () =
   in
   let accelerate_flags =
     match arch with
-    | `x86_64 -> [ "-DACCELERATE"; "-mssse3"; "-maes"; "-mpclmul" ]
+    (* | `x86_64 -> [ "-DACCELERATE"; "-mssse3"; "-maes"; "-mpclmul" ] *)
     | _ -> []
   in
   let ent_flags =
     match arch with
-    | `x86_64 | `x86 -> [ "-DENTROPY"; "-mrdrnd"; "-mrdseed" ]
+    (* | `x86_64 | `x86 -> [ "-DENTROPY"; "-mrdrnd"; "-mrdseed" ] *)
     | _ -> []
   in
   let flags = std_flags @ ent_flags in
