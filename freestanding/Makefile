@@ -1,21 +1,24 @@
 PKG_CONFIG_PATH := $(shell opam config var prefix)/riscv-sysroot/lib/pkgconfig
+OCAML_BOOT_RISCV_PATH := $(shell opam config var prefix)/riscv-sysroot/include/ocaml-boot-riscv
+OCAML_RISCV_PATH := $(shell opam config var prefix)/riscv-sysroot/lib/ocaml
 
 EXISTS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --exists ocaml-freestanding-riscv; echo $$?)
 
-.PHONY: all clean
+.PHONY: all clean display
 all: libmirage_crypto_freestanding_stubs.a
 
 ifeq ($(EXISTS), 1)
 libmirage_crypto_freestanding_stubs.a:
 	touch $@
 else
-CC ?= riscv64-unknown-elf-gcc
+CC = riscv64-unknown-elf-gcc
+AR = riscv64-unknown-elf-gcc-ar
 FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv)
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
-CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS)
+CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
 
 MIRAGE_CRYPTO_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags.sexp | tr -d '"')
-UNOPT_CFLAGS := -I../src/native $(MIRAGE_CRYPTO_CFLAGS) $(FREESTANDING_CFLAGS)
+UNOPT_CFLAGS := -I../src/native $(MIRAGE_CRYPTO_CFLAGS) $(FREESTANDING_CFLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
 
 chacha_generic.o: chacha_generic.c
 	$(CC) $(UNOPT_CFLAGS) -c -o chacha_generic.o chacha_generic.c
@@ -26,6 +29,9 @@ OBJS=detect_cpu_features.o misc.o misc_sse.o hash_stubs.o md5.o sha1.o \
   sha256.o sha512.o aes_generic.o aes_aesni.o des_generic.o chacha.o \
   poly1305-donna.o ghash_pclmul.o ghash_generic.o ghash_ctmul.o \
   entropy_cpu_stubs.o
+
+# display:
+# 	echo $(CFLAGS)
 
 libmirage_crypto_freestanding_stubs.a: $(OBJS) $(UNOPT_OBJS)
 	$(AR) r $@ $^
