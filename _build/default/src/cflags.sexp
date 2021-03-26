@@ -1,1 +1,0 @@
-("--std=c99" "-Wall" "-Wextra" "-Wpedantic" "-O3" "-DENTROPY" "-mrdrnd" "-mrdseed")
