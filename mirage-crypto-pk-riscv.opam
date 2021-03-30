@@ -23,11 +23,10 @@ depends: [
   "mirage-crypto-riscv" {=version}
   "mirage-crypto-rng-riscv" {=version}
   "sexplib-riscv"
-  "ppx_sexp_conv-riscv"
   "zarith-riscv" {>= "1.4"}
   "eqaf-riscv" {>= "0.7"}
   "rresult-riscv" {>= "0.6.0"}
-  "zarith-freestanding-riscv"
+  "zarith-freestanding-riscv" {>= "1.4"}
 ]
 
 description: """
