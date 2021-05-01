@@ -13,7 +13,7 @@ libmirage_crypto_freestanding_stubs.a:
 else
 CC = clang
 AR = riscv64-unknown-elf-gcc-ar
-FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv) --gcc-toolchain=${RISCV}
+FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv) --gcc-toolchain=${RISCV} -march=rv64gc
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
 CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
 
