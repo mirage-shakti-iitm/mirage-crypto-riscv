@@ -58,15 +58,16 @@ static inline void sha1_do_chunk(struct sha1_ctx *ctx, uint32_t *buf)
 {
 	uint32_t a, b, c, d, e;
 	uint32_t w[16];
+	printf("\nHello 0 %x\n", buf);
 #define CPY(i)	w[i] = be32_to_cpu(buf[i])
 	CPY(0); CPY(1); CPY(2); CPY(3); CPY(4); CPY(5); CPY(6); CPY(7);
 	CPY(8); CPY(9); CPY(10); CPY(11); CPY(12); CPY(13); CPY(14); CPY(15);
 #undef CPY
-	printf("\nHello 1\n");
+	// printf("\nHello 1\n");
 	a = ctx->h[0]; b = ctx->h[1]; c = ctx->h[2]; d = ctx->h[3]; e = ctx->h[4];
-	printf("\nHello 2\n");
+	// printf("\nHello 2\n");
 	R(a, b, c, d, e, f1, K1, w[0]);
-	printf("\nHello 3\n");
+	// printf("\nHello 3\n");
 	R(e, a, b, c, d, f1, K1, w[1]);
 	R(d, e, a, b, c, f1, K1, w[2]);
 	R(c, d, e, a, b, f1, K1, w[3]);
@@ -166,6 +167,7 @@ void _mc_sha1_update(struct sha1_ctx *ctx, uint8_t *data, uint32_t len)
 
 	ctx->sz += len;
 
+	// printf("\nHello in _mc_sha1_update ctx->buf - data : %x - %x\n", ctx->buf, data);
 	/* process partial buffer if there's enough data to make a block */
 	if (index && len >= to_fill) {
 		memcpy(ctx->buf + index, data, to_fill);
@@ -173,8 +175,9 @@ void _mc_sha1_update(struct sha1_ctx *ctx, uint8_t *data, uint32_t len)
 		len -= to_fill;
 		data += to_fill;
 		index = 0;
+		// printf("\nHello in _mc_sha1_update ctx->buf - data : %x - %x\n", ctx->buf, data);
 	}
-
+	// printf("\nHello in _mc_sha1_update data : %x\n", data);
 	/* process as much 64-block as possible */
 	for (; len >= 64; len -= 64, data += 64)
 		sha1_do_chunk(ctx, (uint32_t *) data);
@@ -182,6 +185,7 @@ void _mc_sha1_update(struct sha1_ctx *ctx, uint8_t *data, uint32_t len)
 	/* append data into buf */
 	if (len)
 		memcpy(ctx->buf + index, data, len);
+	printf("\nFinal in _mc_sha1_update data : %x\n", data);
 }
 
 void _mc_sha1_finalize(struct sha1_ctx *ctx, uint8_t *out)
@@ -197,9 +201,11 @@ void _mc_sha1_finalize(struct sha1_ctx *ctx, uint8_t *out)
 	/* pad out to 56 */
 	index = (uint32_t) (ctx->sz & 0x3f);
 	padlen = (index < 56) ? (56 - index) : ((64 + 56) - index);
+	printf("\nFinalize 1 padding : %x\n", padding);
 	_mc_sha1_update(ctx, padding, padlen);
 
 	/* append length */
+	printf("\nFinalize 1 &bits : %x\n", &bits);
 	_mc_sha1_update(ctx, (uint8_t *) &bits, sizeof(bits));
 
 	/* output hash */

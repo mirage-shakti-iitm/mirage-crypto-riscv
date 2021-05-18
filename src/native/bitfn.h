@@ -25,6 +25,7 @@
 #ifndef BITFN_H
 #define BITFN_H
 #include <stdint.h>
+#include <stdio.h>
 
 # if (defined(__i386__))
 #  define ARCH_HAS_SWAP32
@@ -67,6 +68,7 @@ static inline uint64_t bitfn_swap64(uint64_t a)
 #ifndef ARCH_HAS_SWAP32
 static inline uint32_t bitfn_swap32(uint32_t a)
 {
+	// printf("\nHello -1\n");
 	return (a << 24) | ((a & 0xff00) << 8) | ((a >> 8) & 0xff00) | (a >> 24);
 }
 #endif
