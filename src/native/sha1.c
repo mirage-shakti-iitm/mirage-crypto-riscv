@@ -25,6 +25,7 @@
 #include <string.h>
 #include "sha1.h"
 #include "bitfn.h"
+#include <stdio.h>
 
 void _mc_sha1_init(struct sha1_ctx *ctx)
 {
@@ -61,10 +62,11 @@ static inline void sha1_do_chunk(struct sha1_ctx *ctx, uint32_t *buf)
 	CPY(0); CPY(1); CPY(2); CPY(3); CPY(4); CPY(5); CPY(6); CPY(7);
 	CPY(8); CPY(9); CPY(10); CPY(11); CPY(12); CPY(13); CPY(14); CPY(15);
 #undef CPY
-
+	printf("\nHello 1\n");
 	a = ctx->h[0]; b = ctx->h[1]; c = ctx->h[2]; d = ctx->h[3]; e = ctx->h[4];
-
+	printf("\nHello 2\n");
 	R(a, b, c, d, e, f1, K1, w[0]);
+	printf("\nHello 3\n");
 	R(e, a, b, c, d, f1, K1, w[1]);
 	R(d, e, a, b, c, f1, K1, w[2]);
 	R(c, d, e, a, b, f1, K1, w[3]);
