@@ -2,7 +2,7 @@
  (name mirage_crypto)
  (public_name mirage-crypto)
  (libraries cstruct eqaf.cstruct)
- (ocamlopt_flags (-default-compartment-id 1 -function-sections))
+ (ocamlopt_flags (-default-compartment-id 255 -function-sections))
  (private_modules aead chacha20 ccm cipher_block cipher_stream hash native
    poly1305 uncommon)
  (foreign_stubs
