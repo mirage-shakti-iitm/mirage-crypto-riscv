@@ -5,6 +5,8 @@
 #include "sha256.h"
 #include "sha512.h"
 
+#include <stdio.h>
+
 #define __define_hash(name, upper)                                           \
                                                                              \
   CAMLprim value                                                             \
@@ -15,6 +17,7 @@
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _update (value ctx, value src, value off, value len) {      \
+    printf("UPDATE => ba : %p | off : %lu | len : %d\n",(uint8_t*) Caml_ba_data_val (ba), Long_val (off), Int_val(len));\
     _mc_ ## name ## _update (                                                \
       (struct name ## _ctx *) Bytes_val (ctx),                               \
       _ba_uint8_off (src, off), Int_val (len));                              \
@@ -23,6 +26,7 @@
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _finalize (value ctx, value dst, value off) {               \
+    printf("FINALIZE => dst : %p | off : %lu\n",(uint8_t*) Caml_ba_data_val (dst), Long_val (off));\
     _mc_ ## name ## _finalize (                                              \
       (struct name ## _ctx *) Bytes_val (ctx), _ba_uint8_off (dst, off));    \
     return Val_unit;                                                         \
