@@ -19,7 +19,9 @@
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _update (value ctx, value src, value off, value len) {      \
-    printf("UPDATE => ba : %p | off : %lu | len : %d\n",((uint8_t*) Caml_ba_data_val (src)), Long_val (off), Int_val(len));\
+    int num_elts_input = 1;                                                  \
+    for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_input = num_elts_input * Caml_ba_array_val(src)->dim[i];\
+    printf("UPDATE => ctx : %p | &ctx->h[0] : %p | ba : %p | off : %lu | len : %d | num_elts_input : %d\n", Bytes_val(ctx), &(((struct name ## _ctx *) Bytes_val(ctx))->buf[0]), ((uint8_t*) Caml_ba_data_val (src)), Long_val (off), Int_val(len), num_elts_input);\
     _mc_ ## name ## _update (                                                \
       (struct name ## _ctx *) Bytes_val (ctx),                               \
       _ba_uint8_off (src, off), Int_val (len));                              \
@@ -28,7 +30,9 @@
                                                                              \
   CAMLprim value                                                             \
   mc_ ## name ## _finalize (value ctx, value dst, value off) {               \
-    printf("FINALIZE => dst : %p | off : %lu\n",((uint8_t*) Caml_ba_data_val (dst)), Long_val (off));\
+    int num_elts_input = 1;                                                  \
+    for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_input = num_elts_input * Caml_ba_array_val(dst)->dim[i];\
+    printf("FINALIZE => ctx : %p | dst : %p | off : %lu | num_elts_input : %d\n", Bytes_val(ctx), ((uint8_t*) Caml_ba_data_val (dst)), Long_val (off), num_elts_input);\
     _mc_ ## name ## _finalize (                                              \
       (struct name ## _ctx *) Bytes_val (ctx), _ba_uint8_off (dst, off));    \
     return Val_unit;                                                         \

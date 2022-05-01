@@ -25,11 +25,12 @@
 #include <string.h>
 #include "sha256.h"
 #include "bitfn.h"
+#include <stdio.h>
 
 void _mc_sha224_init(struct sha224_ctx *ctx)
 {
 	memset(ctx, 0, sizeof(*ctx));
-
+	
 	ctx->h[0] = 0xc1059ed8;
 	ctx->h[1] = 0x367cd507;
 	ctx->h[2] = 0x3070dd17;
@@ -141,6 +142,7 @@ void _mc_sha256_update(struct sha256_ctx *ctx, uint8_t *data, uint32_t len)
 	/* append data into buf */
 	if (len)
 		memcpy(ctx->buf + index, data, len);
+	printf("update_len : %d\n", len);
 }
 
 void _mc_sha224_finalize(struct sha224_ctx *ctx, uint8_t *out)
@@ -172,4 +174,6 @@ void _mc_sha256_finalize(struct sha256_ctx *ctx, uint8_t *out)
 	/* store to digest */
 	for (i = 0; i < 8; i++)
 		p[i] = cpu_to_be32(ctx->h[i]);
+
+	printf("finalize : %d\n", padlen);
 }
