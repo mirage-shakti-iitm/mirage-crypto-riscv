@@ -15,11 +15,11 @@ CC = clang
 AR = riscv64-unknown-elf-gcc-ar
 FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv) --gcc-toolchain=${RISCV} -march=rv64gc
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
-COMPARTMENT_FLAGS=-mllvm -enable-compartment-pass -mllvm -default-compartment-id -mllvm 1 -ffunction-sections
+# COMPARTMENT_FLAGS=-mllvm -enable-compartment-pass -mllvm -default-compartment-id -mllvm 1 -ffunction-sections
 CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS) $(COMPARTMENT_FLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
 
 MIRAGE_CRYPTO_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags.sexp | tr -d '"')
-UNOPT_CFLAGS := -I../src/native $(MIRAGE_CRYPTO_CFLAGS) $(FREESTANDING_CFLAGS) $(COMPARTMENT_FLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
+UNOPT_CFLAGS := -I../src/native $(MIRAGE_CRYPTO_CFLAGS) $(FREESTANDING_CFLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)
 
 chacha_generic.o: chacha_generic.c
 	$(CC) $(UNOPT_CFLAGS) -c -o chacha_generic.o chacha_generic.c
