@@ -26,15 +26,24 @@
 
 #include <stdint.h>
 
+#ifdef FREESTANDING_CRYPTO
 struct md5_ctx
 {
-	uint64_t sz;
-	uint8_t  buf[64];
-	uint32_t h[4];
+    uint64_t sz;
+    uint8_t  *buf; //[64];
+    uint32_t *h; //[4];
 };
+#else
+struct md5_ctx
+{
+    uint64_t sz;
+    uint8_t  buf[64];
+    uint32_t h[4];
+};
+#endif
 
 #define MD5_DIGEST_SIZE		16
-#define MD5_CTX_SIZE		sizeof(struct md5_ctx)
+#define MD5_CTX_SIZE     sizeof(struct md5_ctx)
 
 void _mc_md5_init(struct md5_ctx *ctx);
 void _mc_md5_update(struct md5_ctx *ctx, uint8_t *data, uint32_t len);

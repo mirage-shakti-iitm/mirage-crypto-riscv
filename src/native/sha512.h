@@ -26,20 +26,45 @@
 
 #include <stdint.h>
 
+#ifdef FREESTANDING_CRYPTO
 struct sha512_ctx
 {
-	uint64_t sz[2];
-	uint8_t  buf[128];
-	uint64_t h[8];
+    uint64_t *sz; //[2]
+    uint8_t  *buf; //[128];
+    uint32_t *h; //[8];
 };
+struct sha512_ctx_fat_v
+{
+  __int128 sz; //[2]
+  __int128 buf; //[128];
+  __int128 h; //[8];
+};
+#define sha384_ctx_fat_v sha512_ctx_fat_v
+#else
+struct sha512_ctx
+{
+    uint64_t sz[2];
+    uint8_t  buf[128];
+    uint64_t h[8];
+};
+#endif
 
 #define sha384_ctx sha512_ctx
 
 #define SHA384_DIGEST_SIZE	48
-#define SHA384_CTX_SIZE		sizeof(struct sha384_ctx)
+#ifdef FREESTANDING_CRYPTO
+    #define SHA384_CTX_SIZE		sizeof(struct sha384_ctx_fat_v)
+#else
+    #define SHA384_CTX_SIZE     sizeof(struct sha384_ctx)
+#endif
 
 #define SHA512_DIGEST_SIZE	64
-#define SHA512_CTX_SIZE		sizeof(struct sha512_ctx)
+#ifdef FREESTANDING_CRYPTO
+    #define SHA512_CTX_SIZE     sizeof(struct sha512_ctx_fat_v)
+#else
+    #define SHA512_CTX_SIZE     sizeof(struct sha512_ctx)
+#endif
+
 
 void _mc_sha384_init(struct sha384_ctx *ctx);
 void _mc_sha384_update(struct sha384_ctx *ctx, uint8_t *data, uint32_t len);

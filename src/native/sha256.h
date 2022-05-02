@@ -27,20 +27,45 @@
 
 #include <stdint.h>
 
+#ifdef FREESTANDING_CRYPTO
 struct sha256_ctx
 {
 	uint64_t sz;
-	uint8_t  buf[128];
-	uint32_t h[8];
+	uint8_t  *buf; //[128];
+	uint32_t *h; //[8];
 };
+struct sha256_ctx_fat_v
+{
+  uint64_t sz;
+  __int128 buf; //[128];
+  __int128 h; //[8];
+};
+#define sha224_ctx_fat_v sha256_ctx_fat_v
+#else
+struct sha256_ctx
+{
+    uint64_t sz;
+    uint8_t  buf[128];
+    uint32_t h[8];
+};
+#endif
 
 #define sha224_ctx 		sha256_ctx
 
 #define SHA224_DIGEST_SIZE	28
-#define SHA224_CTX_SIZE		sizeof(struct sha224_ctx)
+#ifdef FREESTANDING_CRYPTO
+    #define SHA224_CTX_SIZE     sizeof(struct sha224_ctx_fat_v)
+#else
+    #define SHA224_CTX_SIZE     sizeof(struct sha224_ctx)
+#endif
+
 
 #define SHA256_DIGEST_SIZE	32
-#define SHA256_CTX_SIZE		sizeof(struct sha256_ctx)
+#ifdef FREESTANDING_CRYPTO
+    #define SHA256_CTX_SIZE     sizeof(struct sha256_ctx_fat_v)
+#else
+    #define SHA256_CTX_SIZE     sizeof(struct sha256_ctx)
+#endif
 
 void _mc_sha224_init(struct sha224_ctx *ctx);
 void _mc_sha224_update(struct sha224_ctx *ctx, uint8_t *data, uint32_t len);

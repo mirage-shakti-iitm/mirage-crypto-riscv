@@ -26,15 +26,24 @@
 
 #include <stdint.h>
 
+#ifdef FREESTANDING_CRYPTO
 struct sha1_ctx
 {
-	uint64_t sz;
-	uint8_t  buf[64];
-	uint32_t h[5];
+    uint64_t sz;
+    uint8_t  *buf; //[64];
+    uint32_t *h; //[5];
 };
+#else
+struct sha1_ctx
+{
+    uint64_t sz;
+    uint8_t  buf[64];
+    uint32_t h[5];
+};
+#endif
 
 #define SHA1_DIGEST_SIZE	20
-#define SHA1_CTX_SIZE 		(sizeof(struct sha1_ctx))
+#define SHA224_CTX_SIZE     sizeof(struct sha1_ctx)
 
 void _mc_sha1_init(struct sha1_ctx *ctx);
 void _mc_sha1_update(struct sha1_ctx *ctx, uint8_t *data, uint32_t len);

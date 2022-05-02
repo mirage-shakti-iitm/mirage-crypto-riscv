@@ -29,7 +29,7 @@
 
 void _mc_sha224_init(struct sha224_ctx *ctx)
 {
-	memset(ctx, 0, sizeof(*ctx));
+	// memset(ctx, 0, sizeof(*ctx));
 	
 	ctx->h[0] = 0xc1059ed8;
 	ctx->h[1] = 0x367cd507;
@@ -43,7 +43,7 @@ void _mc_sha224_init(struct sha224_ctx *ctx)
 
 void _mc_sha256_init(struct sha256_ctx *ctx)
 {
-	memset(ctx, 0, sizeof(*ctx));
+	// memset(ctx, 0, sizeof(*ctx));
 
 	ctx->h[0] = 0x6a09e667;
 	ctx->h[1] = 0xbb67ae85;
