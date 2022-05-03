@@ -683,7 +683,7 @@ unsigned char *kptr;		/* unsigned char[24] */
 
 /* OCaml front-end */
 
-static inline void _mc_ddes (unsigned char *src, unsigned char *dst, unsigned int blocks) {
+static /*inline*/ void _mc_ddes (unsigned char *src, unsigned char *dst, unsigned int blocks) {
   while (blocks --) {
     mc_Ddes (src, dst);
     src += 8 ; dst += 8;

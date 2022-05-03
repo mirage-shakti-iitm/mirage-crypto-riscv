@@ -28,7 +28,7 @@
 
 # if (defined(__i386__))
 #  define ARCH_HAS_SWAP32
-static inline uint32_t bitfn_swap32(uint32_t a)
+static /*inline*/ uint32_t bitfn_swap32(uint32_t a)
 {
 	__asm__ ("bswap %0" : "=r" (a) : "0" (a));
 	return a;
@@ -36,7 +36,7 @@ static inline uint32_t bitfn_swap32(uint32_t a)
 /**********************************************************/
 # elif (defined(__arm__))
 #  define ARCH_HAS_SWAP32
-static inline uint32_t bitfn_swap32(uint32_t a)
+static /*inline*/ uint32_t bitfn_swap32(uint32_t a)
 {
 	uint32_t tmp = a;
 	__asm__ volatile ("eor %1, %0, %0, ror #16\n"
@@ -50,13 +50,13 @@ static inline uint32_t bitfn_swap32(uint32_t a)
 # elif defined(__x86_64__)
 #  define ARCH_HAS_SWAP32
 #  define ARCH_HAS_SWAP64
-static inline uint32_t bitfn_swap32(uint32_t a)
+static /*inline*/ uint32_t bitfn_swap32(uint32_t a)
 {
 	__asm__ ("bswap %0" : "=r" (a) : "0" (a));
 	return a;
 }
 
-static inline uint64_t bitfn_swap64(uint64_t a)
+static /*inline*/ uint64_t bitfn_swap64(uint64_t a)
 {
 	__asm__ ("bswap %0" : "=r" (a) : "0" (a));
 	return a;
@@ -65,58 +65,58 @@ static inline uint64_t bitfn_swap64(uint64_t a)
 # endif
 
 #ifndef ARCH_HAS_SWAP32
-static inline uint32_t bitfn_swap32(uint32_t a)
+static /*inline*/ uint32_t bitfn_swap32(uint32_t a)
 {
 	return (a << 24) | ((a & 0xff00) << 8) | ((a >> 8) & 0xff00) | (a >> 24);
 }
 #endif
 
 #ifndef ARCH_HAS_SWAP64
-static inline uint64_t bitfn_swap64(uint64_t a)
+static /*inline*/ uint64_t bitfn_swap64(uint64_t a)
 {
 	return ((uint64_t) bitfn_swap32((uint32_t) (a >> 32))) |
 	       (((uint64_t) bitfn_swap32((uint32_t) a)) << 32);
 }
 #endif
 
-static inline uint32_t rol32(uint32_t word, uint32_t shift)
+static /*inline*/ uint32_t rol32(uint32_t word, uint32_t shift)
 {
 	return (word << shift) | (word >> (32 - shift));
 }
 
-static inline uint32_t ror32(uint32_t word, uint32_t shift)
+static /*inline*/ uint32_t ror32(uint32_t word, uint32_t shift)
 {
 	return (word >> shift) | (word << (32 - shift));
 }
 
-static inline uint64_t rol64(uint64_t word, uint32_t shift)
+static /*inline*/ uint64_t rol64(uint64_t word, uint32_t shift)
 {
 	return (word << shift) | (word >> (64 - shift));
 }
 
-static inline uint64_t ror64(uint64_t word, uint32_t shift)
+static /*inline*/ uint64_t ror64(uint64_t word, uint32_t shift)
 {
 	return (word >> shift) | (word << (64 - shift));
 }
 
-static inline void array_swap32(uint32_t *d, uint32_t *s, uint32_t nb)
+static /*inline*/ void array_swap32(uint32_t *d, uint32_t *s, uint32_t nb)
 {
 	while (nb--)
 		*d++ = bitfn_swap32(*s++);
 }
 
-static inline void array_swap64(uint64_t *d, uint64_t *s, uint32_t nb)
+static /*inline*/ void array_swap64(uint64_t *d, uint64_t *s, uint32_t nb)
 {
 	while (nb--)
 		*d++ = bitfn_swap64(*s++);
 }
 
-static inline void array_copy32(uint32_t *d, uint32_t *s, uint32_t nb)
+static /*inline*/ void array_copy32(uint32_t *d, uint32_t *s, uint32_t nb)
 {
 	while (nb--) *d++ = *s++;
 }
 
-static inline void array_copy64(uint64_t *d, uint64_t *s, uint32_t nb)
+static /*inline*/ void array_copy64(uint64_t *d, uint64_t *s, uint32_t nb)
 {
 	while (nb--) *d++ = *s++;
 }

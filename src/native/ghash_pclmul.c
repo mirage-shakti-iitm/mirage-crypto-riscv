@@ -30,31 +30,31 @@
 
 #define __reduction_poly (_mm_set_epi64x (0, 0xc200000000000000))
 
-static inline __m128i __shiftl1_si128 (__m128i w) {
+static /*inline*/ __m128i __shiftl1_si128 (__m128i w) {
   return _mm_or_si128 (_mm_slli_epi64 (w, 1), _mm_slli_si128(_mm_srli_epi64 (w, 63), 8));
 }
 
-static inline __m128i __carry_si128 (__m128i w) {
+static /*inline*/ __m128i __carry_si128 (__m128i w) {
   return _mm_cmpgt_epi32 (_mm_setzero_si128 (), _mm_shuffle_epi32 (w, 0xff));
 }
 
-static inline void __shiftl1_256 (__m128i *r1, __m128i *r0, __m128i w1, __m128i w0) {
+static /*inline*/ void __shiftl1_256 (__m128i *r1, __m128i *r0, __m128i w1, __m128i w0) {
   __m128i c = _mm_and_si128 (__carry_si128 (w0), _mm_set_epi64x (0, 1));
   *r1 = _mm_or_si128 (__shiftl1_si128 (w1), c);
   *r0 = __shiftl1_si128 (w0);
 }
 
-static inline __m128i __swap_epi64 (__m128i x) {
+static /*inline*/ __m128i __swap_epi64 (__m128i x) {
   return _mm_shuffle_epi32 (x, 0x4e); // ...or vpalignr
 }
 
-static inline __m128i __reverse_si128 (__m128i x) {
+static /*inline*/ __m128i __reverse_si128 (__m128i x) {
   __m128i mask = _mm_set_epi64x (0x0001020304050607, 0x08090a0b0c0d0e0f);
   return _mm_shuffle_epi8 (x, mask);
 }
 
 #if !defined (__MC_GHASH_KARATSUBA)
-static inline void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) {
+static /*inline*/ void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) {
 
   __m128i w0 = _mm_clmulepi64_si128 (a, b, 0x00),
           w1 = _mm_clmulepi64_si128 (a, b, 0x11),
@@ -65,7 +65,7 @@ static inline void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) 
   *r1 = xor (w1, _mm_srli_si128 (t, 8));
 }
 #else
-static inline void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) {
+static /*inline*/ void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) {
 
   __m128i w0 = _mm_clmulepi64_si128 (a, b, 0x00),
           w1 = _mm_clmulepi64_si128 (a, b, 0x11),
@@ -79,13 +79,13 @@ static inline void __clmul_128 (__m128i *r1, __m128i *r0, __m128i a, __m128i b) 
 #endif /* __MC_GHASH_KARATSUBA */
 
 #if !defined (__MC_GHASH_REFLECTED_REDUCE)
-static inline __m128i __slli_128 (__m128i a, uint8_t bits) {
+static /*inline*/ __m128i __slli_128 (__m128i a, uint8_t bits) {
   return _mm_or_si128 (
     _mm_slli_epi64 (a, bits),
     _mm_srli_epi64 (_mm_slli_si128 (a, 8), 64 - bits) );
 }
 
-static inline __m128i __reflect (__m128i x) {
+static /*inline*/ __m128i __reflect (__m128i x) {
   __m128i and_mask = _mm_set_epi32 (0x0f0f0f0f, 0x0f0f0f0f, 0x0f0f0f0f, 0x0f0f0f0f),
           lo_mask  = _mm_set_epi32 (0x0f070b03, 0x0d050901, 0x0e060a02, 0x0c040800),
           hi_mask  = _mm_set_epi32 (0xf070b030, 0xd0509010, 0xe060a020, 0xc0408000);
@@ -95,7 +95,7 @@ static inline __m128i __reflect (__m128i x) {
     _mm_shuffle_epi8 (lo_mask, _mm_and_si128 (_mm_srli_epi16 (x, 4), and_mask)));
 }
 
-static inline __m128i __reduce_g (__m128i w1, __m128i w0) {
+static /*inline*/ __m128i __reduce_g (__m128i w1, __m128i w0) {
 
   __m128i t = _mm_srli_si128 (w1, 8);
 
@@ -105,7 +105,7 @@ static inline __m128i __reduce_g (__m128i w1, __m128i w0) {
 }
 #define __repr_xform __reflect
 #else
-static inline __m128i __reduce_g (__m128i w1, __m128i w0) {
+static /*inline*/ __m128i __reduce_g (__m128i w1, __m128i w0) {
 
   __m128i p = __reduction_poly;
 
@@ -120,17 +120,17 @@ static inline __m128i __reduce_g (__m128i w1, __m128i w0) {
 #define __repr_xform __reverse_si128
 #endif
 
-static inline __m128i __load_xform (const __m128i *p) {
+static /*inline*/ __m128i __load_xform (const __m128i *p) {
   return __repr_xform (_mm_loadu_si128 (p));
 }
 
-static inline __m128i __loadu_si128_with_padding (const void *src, size_t n) {
+static /*inline*/ __m128i __loadu_si128_with_padding (const void *src, size_t n) {
   __m128i buf[1] = { 0 };
   memcpy (buf, src, n);
   return __repr_xform (_mm_loadu_si128 (buf));
 }
 
-static inline __m128i __gfmul (__m128i a, __m128i b) {
+static /*inline*/ __m128i __gfmul (__m128i a, __m128i b) {
   __m128i w1, w0;
   __clmul_128 (&w1, &w0, a, b);
   return __reduce_g (w1, w0);
@@ -142,14 +142,14 @@ static inline __m128i __gfmul (__m128i a, __m128i b) {
 #define __keys 1
 #endif
 
-static inline void __derive (__m128i key[1], __m128i *m) {
+static /*inline*/ void __derive (__m128i key[1], __m128i *m) {
   __m128i acc = __repr_xform (_mm_set_epi64x (0, 0x80)),
           k   = __load_xform (key);
   for (int i = 0; i < __keys; i ++)
     _mm_storeu_si128 (m + i, acc = __gfmul (acc, k));
 }
 
-static inline void __ghash (__m128i *m, __m128i hash[1], const __m128i *src, size_t n) {
+static /*inline*/ void __ghash (__m128i *m, __m128i hash[1], const __m128i *src, size_t n) {
 
   __m128i k[__keys], acc = __load_xform (hash);
   k[0] = _mm_loadu_si128 (m);

@@ -2,7 +2,7 @@
 
 #ifdef __mc_ACCELERATE__
 
-static inline void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
+static /*inline*/ void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
 #ifdef ARCH_64BIT
   __m128i r;
   for (; n >= 16; n -= 16, src += 16, dst += 16)
@@ -25,7 +25,7 @@ static inline void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
 }
 
 /* The GCM counter. Counts on the last 32 bits, ignoring carry. */
-static inline void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t blocks) {
+static /*inline*/ void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t blocks) {
 
   __m128i ctr, c1   = _mm_set_epi32 (1, 0, 0, 0),
                mask = _mm_set_epi64x (0x0c0d0e0f0b0a0908, 0x0706050403020100);

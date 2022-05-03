@@ -28,16 +28,16 @@ static int _mc_aesni_rk_size (uint8_t rounds) {
 }
 
 #if defined(__x86_64__)
-static inline __m128i* __rk (const void *rk) {
+static /*inline*/ __m128i* __rk (const void *rk) {
   return (__m128i *) (((uint64_t)rk + 15) & -16);
 }
 #else
-static inline __m128i* __rk (const void *rk) {
+static /*inline*/ __m128i* __rk (const void *rk) {
   return (__m128i *) (((uint32_t)rk + 15) & -16);
 }
 #endif
 
-static inline __m128i __mix (__m128i r1, __m128i r2) {
+static /*inline*/ __m128i __mix (__m128i r1, __m128i r2) {
   __m128i r = r1;
   r = _mm_xor_si128 (r, _mm_slli_si128 (r1, 0x4));
   r = _mm_xor_si128 (r, _mm_slli_si128 (r1, 0x8));
@@ -48,12 +48,12 @@ static inline __m128i __mix (__m128i r1, __m128i r2) {
 
 #define __assist(r1, r2, mode) (__mix (r1, _mm_shuffle_epi32 (r2, mode)))
 
-static inline void __pack (__m128i *o1, __m128i *o2, __m128i r1, __m128i r2, __m128i r3) {
+static /*inline*/ void __pack (__m128i *o1, __m128i *o2, __m128i r1, __m128i r2, __m128i r3) {
   *o1 = (__m128i) _mm_shuffle_pd ((__m128d) r1, (__m128d) r2, 0);
   *o2 = (__m128i) _mm_shuffle_pd ((__m128d) r2, (__m128d) r3, 1);
 }
 
-static inline void _mc_aesni_derive_e_key (const uint8_t *key, uint8_t *rk0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_derive_e_key (const uint8_t *key, uint8_t *rk0, uint8_t rounds) {
 
   __m128i *rk = __rk (rk0);
   __m128i temp1, temp2;
@@ -138,7 +138,7 @@ static inline void _mc_aesni_derive_e_key (const uint8_t *key, uint8_t *rk0, uin
   }
 }
 
-static inline void _mc_aesni_invert_e_key (const uint8_t *rk0, uint8_t *kr0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_invert_e_key (const uint8_t *rk0, uint8_t *kr0, uint8_t rounds) {
 
   __m128i *rk1 = __rk (rk0),
           *kr  = __rk (kr0),
@@ -164,7 +164,7 @@ static void _mc_aesni_derive_d_key (const uint8_t *key, uint8_t *kr, uint8_t rou
 }
 
 
-static inline void _mc_aesni_enc (const uint8_t src[16], uint8_t dst[16], const uint8_t *rk0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_enc (const uint8_t src[16], uint8_t dst[16], const uint8_t *rk0, uint8_t rounds) {
 
   __m128i r   = _mm_loadu_si128 ((__m128i*) src),
           *rk = __rk (rk0);
@@ -178,7 +178,7 @@ static inline void _mc_aesni_enc (const uint8_t src[16], uint8_t dst[16], const 
   _mm_storeu_si128 ((__m128i*) dst, r);
 }
 
-static inline void _mc_aesni_dec (const uint8_t src[16], uint8_t dst[16], const uint8_t *rk0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_dec (const uint8_t src[16], uint8_t dst[16], const uint8_t *rk0, uint8_t rounds) {
 
   __m128i r   = _mm_loadu_si128 ((__m128i*) src),
           *rk = __rk (rk0);
@@ -192,7 +192,7 @@ static inline void _mc_aesni_dec (const uint8_t src[16], uint8_t dst[16], const 
   _mm_storeu_si128 ((__m128i*) dst, r);
 }
 
-static inline void _mc_aesni_enc8 (const uint8_t src[128], uint8_t dst[128], const uint8_t *rk0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_enc8 (const uint8_t src[128], uint8_t dst[128], const uint8_t *rk0, uint8_t rounds) {
 
   __m128i *in  = (__m128i*) src,
           *out = (__m128i*) dst,
@@ -246,7 +246,7 @@ static inline void _mc_aesni_enc8 (const uint8_t src[128], uint8_t dst[128], con
   _mm_storeu_si128 (out + 7, r7);
 }
 
-static inline void _mc_aesni_dec8 (const uint8_t src[128], uint8_t dst[128], const uint8_t *rk0, uint8_t rounds) {
+static /*inline*/ void _mc_aesni_dec8 (const uint8_t src[128], uint8_t dst[128], const uint8_t *rk0, uint8_t rounds) {
 
   __m128i *in  = (__m128i*) src,
           *out = (__m128i*) dst,
@@ -334,11 +334,11 @@ static inline void _mc_aesni_dec8 (const uint8_t src[128], uint8_t dst[128], con
     }                                                        \
   }                                                          \
 
-static inline void _mc_aesni_enc_blocks (const uint8_t *src, uint8_t *dst, const uint8_t *rk, uint8_t rounds, size_t blocks) {
+static /*inline*/ void _mc_aesni_enc_blocks (const uint8_t *src, uint8_t *dst, const uint8_t *rk, uint8_t rounds, size_t blocks) {
   __blocked_loop (_mc_aesni_enc, _mc_aesni_enc8, src, dst, rk, rounds, blocks);
 }
 
-static inline void _mc_aesni_dec_blocks (const uint8_t *src, uint8_t *dst, const uint8_t *rk, uint8_t rounds, size_t blocks) {
+static /*inline*/ void _mc_aesni_dec_blocks (const uint8_t *src, uint8_t *dst, const uint8_t *rk, uint8_t rounds, size_t blocks) {
   __blocked_loop (_mc_aesni_dec, _mc_aesni_dec8, src, dst, rk, rounds, blocks);
 }
 

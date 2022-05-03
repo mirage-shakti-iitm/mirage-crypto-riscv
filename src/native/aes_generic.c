@@ -1218,11 +1218,11 @@ static void mc_rijndaelDecrypt(const uint32_t *rk, int nrounds, const uint8_t ci
     src += 16 ; dst += 16 ;                             \
   }
 
-static inline void _mc_aes_enc_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks) {
+static /*inline*/ void _mc_aes_enc_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks) {
   __blocked_loop (mc_rijndaelEncrypt, src, dst, rk, rounds, blocks);
 }
 
-static inline void _mc_aes_dec_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks) {
+static /*inline*/ void _mc_aes_dec_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks) {
   __blocked_loop (mc_rijndaelDecrypt, src, dst, rk, rounds, blocks);
 }
 

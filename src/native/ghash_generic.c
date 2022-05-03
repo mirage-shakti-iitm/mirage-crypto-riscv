@@ -22,17 +22,17 @@
 
 static const __uint128_t r = __set_uint128_t (0xe100000000000000, 0);
 
-static inline __uint128_t __load_128_t (const uint64_t s[2]) {
+static /*inline*/ __uint128_t __load_128_t (const uint64_t s[2]) {
   return __set_uint128_t (be64_to_cpu (s[0]), be64_to_cpu (s[1]));
 }
 
-static inline __uint128_t __load_128_t_with_padding (const uint8_t *src, size_t n) {
+static /*inline*/ __uint128_t __load_128_t_with_padding (const uint8_t *src, size_t n) {
   uint64_t buf[2] = { 0 };
   memcpy (buf, src, n);
   return __load_128_t (buf);
 }
 
-static inline void __store_128_t (uint64_t s[2], __uint128_t x) {
+static /*inline*/ void __store_128_t (uint64_t s[2], __uint128_t x) {
   s[0] = cpu_to_be64 (x >> 64);
   s[1] = cpu_to_be64 (x);
 }
@@ -47,7 +47,7 @@ static inline void __store_128_t (uint64_t s[2], __uint128_t x) {
 #define __t_size   512
 #endif
 
-static inline __uint128_t __gfmul (__uint128_t a, __uint128_t b) {
+static /*inline*/ __uint128_t __gfmul (__uint128_t a, __uint128_t b) {
   __uint128_t z = 0,
               v = a;
   for (int i = 0; i < 128; i ++) {
@@ -60,7 +60,7 @@ static inline __uint128_t __gfmul (__uint128_t a, __uint128_t b) {
 
 // NB Exponents are reversed.
 // TODO: Fast table derivation.
-static inline void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
+static /*inline*/ void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
   __uint128_t e = 1 << (__t_width - 1),
               h = __load_128_t (key);
   for (int i = 0; i < __t_tables; i ++, e <<= __t_width) {
@@ -71,14 +71,14 @@ static inline void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
 }
 
 #define __t_mask ((1 << __t_width) - 1)
-static inline __uint128_t __gfmul_tab (__uint128_t m[__t_size], __uint128_t x) {
+static /*inline*/ __uint128_t __gfmul_tab (__uint128_t m[__t_size], __uint128_t x) {
   __uint128_t r = 0;
   for (int i = 0; i < __t_tables; i ++)
     r ^= m[(i << __t_width) | ((uint8_t) (x >> (i * __t_width)) & __t_mask)];
   return r;
 }
 
-static inline void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
+static /*inline*/ void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
   __uint128_t acc = __load_128_t (hash);
   for (; n >= 16; src += 16, n -= 16)
     acc = __gfmul_tab (m, acc ^ __load_128_t ((uint64_t *) src));

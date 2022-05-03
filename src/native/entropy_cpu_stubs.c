@@ -25,7 +25,7 @@
 #if defined (__arm__)
 /* Replace with `read_virtual_count` from MiniOS when that symbol
  * gets exported. */
-static inline uint32_t read_virtual_count () {
+static /*inline*/ uint32_t read_virtual_count () {
   uint32_t c_lo, c_hi;
   __asm__ __volatile__("mrrc p15, 1, %0, %1, c14":"=r"(c_lo), "=r"(c_hi));
   return c_lo;
@@ -39,7 +39,7 @@ static inline uint32_t read_virtual_count () {
 
 #if defined (__aarch64__)
 #define	isb()		__asm __volatile("isb" : : : "memory")
-static inline uint64_t read_virtual_count(void)
+static /*inline*/ uint64_t read_virtual_count(void)
 {
   uint64_t c;
   isb();
@@ -52,7 +52,7 @@ static inline uint64_t read_virtual_count(void)
 /* from clang's builtin version and gperftools at
 https://chromium.googlesource.com/external/gperftools/+/master/src/base/cycleclock.h
 */
-static inline uint64_t read_cycle_counter(void)
+static /*inline*/ uint64_t read_cycle_counter(void)
 {
   uint64_t rval;
   __asm__ volatile ("mfspr %0, 268":"=r" (rval));

@@ -2,21 +2,21 @@
 
 #include "mirage_crypto.h"
 
-static inline void mc_chacha_quarterround(uint32_t *x, int a, int b, int c, int d) {
+static /*inline*/ void mc_chacha_quarterround(uint32_t *x, int a, int b, int c, int d) {
   x[a] += x[b]; x[d] = rol32(x[d] ^ x[a], 16);
   x[c] += x[d]; x[b] = rol32(x[b] ^ x[c], 12);
   x[a] += x[b]; x[d] = rol32(x[d] ^ x[a], 8);
   x[c] += x[d]; x[b] = rol32(x[b] ^ x[c], 7);
 }
 
-static inline uint32_t mc_get_u32_le(uint8_t *input, int offset) {
+static /*inline*/ uint32_t mc_get_u32_le(uint8_t *input, int offset) {
   return input[offset]
     | (input[offset + 1] << 8)
     | (input[offset + 2] << 16)
     | (input[offset + 3] << 24);
 }
 
-static inline void mc_set_u32_le(uint8_t *input, int offset, uint32_t value) {
+static /*inline*/ void mc_set_u32_le(uint8_t *input, int offset, uint32_t value) {
   input[offset] = (uint8_t) value;
   input[offset + 1] = (uint8_t) (value >> 8);
   input[offset + 2] = (uint8_t) (value >> 16);

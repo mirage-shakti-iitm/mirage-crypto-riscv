@@ -64,7 +64,7 @@
  */
 #define MUL(x, y)   ((uint64_t)(x) * (uint64_t)(y))
 
-static inline void
+static /*inline*/ void
 br_enc32be(void *dst, uint32_t x)
 {
 	unsigned char *buf;
@@ -76,7 +76,7 @@ br_enc32be(void *dst, uint32_t x)
 	buf[3] = (unsigned char)x;
 }
 
-static inline uint32_t
+static /*inline*/ uint32_t
 br_dec32be(const void *src)
 {
 	const unsigned char *buf;
@@ -88,7 +88,7 @@ br_dec32be(const void *src)
 		| (uint32_t)buf[3];
 }
 
-static inline void
+static /*inline*/ void
 bmul(uint32_t *hi, uint32_t *lo, uint32_t x, uint32_t y)
 {
 	uint32_t x0, x1, x2, x3;
@@ -274,7 +274,7 @@ CAMLprim value mc_ghash_key_size_generic (__unit ()) {
   return Val_int(16);
 }
 
-static inline void __copy (uint64_t key[2], uint32_t m[4]) {
+static /*inline*/ void __copy (uint64_t key[2], uint32_t m[4]) {
   m[0] = key[0] & 0xFFFFFFFF;
   m[1] = key[0] >> 32;
   m[2] = key[1] & 0xFFFFFFFF;
