@@ -208,7 +208,7 @@ static /*inline*/ void __ghash (__m128i *m, __m128i hash[1], const __m128i *src,
 CAMLprim value mc_ghash_key_size (__unit ()) {
   value s;
   // _mc_switch_accel(pclmul,
-    s = mc_ghash_key_size_generi(Val_unit);
+    s = mc_ghash_key_size_generic(Val_unit);
     // s = Val_int (__keys * 16))
   return s;
 }
