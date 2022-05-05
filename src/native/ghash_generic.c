@@ -60,7 +60,7 @@ static /*inline*/ __uint128_t __gfmul (__uint128_t a, __uint128_t b) {
 
 // NB Exponents are reversed.
 // TODO: Fast table derivation.
-static /*inline*/ void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
+/*static*/ /*inline*/ void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
   __uint128_t e = 1 << (__t_width - 1),
               h = __load_128_t (key);
   for (int i = 0; i < __t_tables; i ++, e <<= __t_width) {
@@ -78,7 +78,7 @@ static /*inline*/ __uint128_t __gfmul_tab (__uint128_t m[__t_size], __uint128_t 
   return r;
 }
 
-static /*inline*/ void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
+/*static*/ /*inline*/ void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
   __uint128_t acc = __load_128_t (hash);
   for (; n >= 16; src += 16, n -= 16)
     acc = __gfmul_tab (m, acc ^ __load_128_t ((uint64_t *) src));
@@ -87,20 +87,20 @@ static /*inline*/ void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const
   __store_128_t (hash, acc);
 }
 
-CAMLprim value mc_ghash_key_size_generic (__unit ()) {
-  return Val_int (sizeof (__uint128_t) * __t_size);
-}
+// CAMLprim value mc_ghash_key_size_generic (__unit ()) {
+//   return Val_int (sizeof (__uint128_t) * __t_size);
+// }
 
-CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
-  __derive ((uint64_t *) _ba_uint8_off (key, off), (__uint128_t *) Bp_val (m));
-  return Val_unit;
-}
+// CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
+//   __derive ((uint64_t *) _ba_uint8_off (key, off), (__uint128_t *) Bp_val (m));
+//   return Val_unit;
+// }
 
-CAMLprim value
-mc_ghash_generic (value m, value hash, value src, value off, value len) {
-  __ghash ((__uint128_t *) Bp_val (m), (uint64_t *) Bp_val (hash),
-           _ba_uint8_off (src, off), Int_val (len) );
-  return Val_unit;
-}
+// CAMLprim value
+// mc_ghash_generic (value m, value hash, value src, value off, value len) {
+//   __ghash ((__uint128_t *) Bp_val (m), (uint64_t *) Bp_val (hash),
+//            _ba_uint8_off (src, off), Int_val (len) );
+//   return Val_unit;
+// }
 
 #endif /* ARCH_64BIT */

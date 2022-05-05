@@ -20,7 +20,24 @@
 #define __MC_GHASH_REFLECTED_REDUCE
 #define __MC_GHASH_AGGREGATED_REDUCE
 
+// #include "ghash_generic.h"
+#define __MC_GHASH_LARGE_TABLES
+
+#if defined (__MC_GHASH_LARGE_TABLES)
+#define __t_width  8     // coefficient window
+#define __t_tables 16    // 128 / t_width
+#define __t_size   4096  // 2^t_width * t_tables
+#else
+#define __t_width  4
+#define __t_tables 32
+#define __t_size   512
+#endif
 #include "mirage_crypto.h"
+#include <string.h>
+extern void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n);
+extern void __derive (uint64_t key[2], __uint128_t m[__t_size]);
+
+
 #ifdef __mc_ACCELERATE__
 
 #include <string.h>
@@ -218,4 +235,20 @@ CAMLprim value mc_ghash_mode (__unit ()) {
     enabled = 0,
     enabled = 1)
   return Val_int (enabled);
+}
+
+CAMLprim value mc_ghash_key_size_generic (__unit ()) {
+  return Val_int (sizeof (__uint128_t) * __t_size);
+}
+
+CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
+  __derive ((uint64_t *) _ba_uint8_off (key, off), (__uint128_t *) Bp_val (m));
+  return Val_unit;
+}
+
+CAMLprim value
+mc_ghash_generic (value m, value hash, value src, value off, value len) {
+  __ghash ((__uint128_t *) Bp_val (m), (uint64_t *) Bp_val (hash),
+           _ba_uint8_off (src, off), Int_val (len) );
+  return Val_unit;
 }
