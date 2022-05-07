@@ -344,67 +344,170 @@ static inline void _mc_aesni_dec_blocks (const uint8_t *src, uint8_t *dst, const
 
 #endif /* __mc_ACCELERATE__ */
 
+#ifdef FREESTANDING_CRYPTO
+/*************************************************** aes_generic.c ***************************************************/
+#define KEYLENGTH(keybits) ((keybits)/8)
+#define RKLENGTH(keybits)  ((keybits)/8+28)
+#define NROUNDS(keybits)   ((keybits)/32+6)
+#define keybits_of_r(x) ((x - 6) * 32)
+
+extern void _mc_aes_enc_blocks (__int128 src, __int128 dst, __int128 rk, uint8_t rounds, size_t blocks);
+extern void _mc_aes_dec_blocks (__int128 src, __int128 dst, __int128 rk, uint8_t rounds, size_t blocks);
+extern int mc_rijndaelSetupEncrypt(__int128 rk, __int128 key, int keybits);
+extern int mc_rijndaelSetupDecrypt(__int128 rk, __int128 key, int keybits);
+extern void init_static_array();
+
+// extern void _mc_aes_enc_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks);
+// extern void _mc_aes_dec_blocks (const uint8_t *src, uint8_t *dst, const uint32_t *rk, uint8_t rounds, size_t blocks);
+// extern int mc_rijndaelSetupEncrypt(uint32_t *rk, const uint8_t *key, int keybits);
+// extern int mc_rijndaelSetupDecrypt(uint32_t *rk, const uint8_t *key, int keybits);
+// void init_static_array();
+
+CAMLprim value
+mc_aes_rk_size_generic (value rounds) {
+  init_static_array();
+  return Val_int (RKLENGTH (keybits_of_r (Int_val (rounds))) * sizeof(uint32_t));
+}
+
+CAMLprim value
+mc_aes_derive_e_key_generic (value key, value off1, value rk, value rounds) {
+  init_static_array();
+  int num_elts_rk = 1;
+  for (int i = 0; i < Caml_ba_array_val(rk)->num_dims; i++) num_elts_rk = num_elts_rk * Caml_ba_array_val(rk)->dim[i];
+  __int128 rk_fpr = craft(_ba_uint32 (rk), _ba_uint32 (rk), (uint32_t*)((_ba_uint32 (rk))+num_elts_rk), 0);
+  
+  int num_elts_key = 1;
+  for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
+  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_key), 0); 
+
+  mc_rijndaelSetupEncrypt(rk_fpr, key_off_fpr, keybits_of_r (Int_val (rounds)));
+
+  return Val_unit;
+}
+
+CAMLprim value
+mc_aes_derive_d_key_generic (value key, value off1, value kr, value rounds, value __unused (rk)) {
+  init_static_array();
+  int num_elts_kr = 1;
+  for (int i = 0; i < Caml_ba_array_val(kr)->num_dims; i++) num_elts_kr = num_elts_kr * Caml_ba_array_val(kr)->dim[i];
+  __int128 kr_fpr = craft(_ba_uint32 (kr), _ba_uint32 (kr), (uint32_t*)((_ba_uint32 (kr))+num_elts_kr), 0);
+  
+  int num_elts_key = 1;
+  for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
+  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_key), 0);
+
+  mc_rijndaelSetupDecrypt(kr_fpr, key_off_fpr, keybits_of_r (Int_val (rounds)));
+
+  return Val_unit;
+}
+
+CAMLprim value
+mc_aes_enc_generic (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
+  init_static_array();
+  int num_elts_rk = 1;
+  for (int i = 0; i < Caml_ba_array_val(rk)->num_dims; i++) num_elts_rk = num_elts_rk * Caml_ba_array_val(rk)->dim[i];
+  __int128 rk_fpr = craft(_ba_uint32 (rk), _ba_uint32 (rk), (uint32_t*)((_ba_uint32 (rk))+num_elts_rk), 0);
+  
+  int num_elts_src = 1;
+  for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_src = num_elts_src * Caml_ba_array_val(src)->dim[i];
+  __int128 src_off_fpr = craft(_ba_uint8_off (src, off1), (uint8_t*)Caml_ba_data_val(src), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_src), 0);
+  
+  int num_elts_dst = 1;
+  for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_dst = num_elts_dst * Caml_ba_array_val(dst)->dim[i];
+  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off2), (uint8_t*)Caml_ba_data_val(dst), (uint8_t*)((uint8_t*)Caml_ba_data_val(dst)+num_elts_dst), 0);
+
+  _mc_aes_enc_blocks(src_off_fpr, dst_off_fpr, rk_fpr, Int_val (rounds), Int_val (blocks));
+
+  return Val_unit;
+}
+
+CAMLprim value
+mc_aes_dec_generic (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
+  init_static_array();
+  int num_elts_rk = 1;
+  for (int i = 0; i < Caml_ba_array_val(rk)->num_dims; i++) num_elts_rk = num_elts_rk * Caml_ba_array_val(rk)->dim[i];
+  __int128 rk_fpr = craft(_ba_uint32 (rk), _ba_uint32 (rk), (uint32_t*)((_ba_uint32 (rk))+num_elts_rk), 0);
+  
+  int num_elts_src = 1;
+  for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_src = num_elts_src * Caml_ba_array_val(src)->dim[i];
+  __int128 src_off_fpr = craft(_ba_uint8_off (src, off1), (uint8_t*)Caml_ba_data_val(src), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_src), 0);
+  
+  int num_elts_dst = 1;
+  for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_dst = num_elts_dst * Caml_ba_array_val(dst)->dim[i];
+  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off2), (uint8_t*)Caml_ba_data_val(dst), (uint8_t*)((uint8_t*)Caml_ba_data_val(dst)+num_elts_dst), 0);
+
+  _mc_aes_dec_blocks(src_off_fpr, dst_off_fpr, rk_fpr, Int_val (rounds), Int_val (blocks));
+  
+  return Val_unit;
+}
+/*************************************************** aes_generic.c ***************************************************/
+
+#endif // FREESTANDING_CRYPTO
+
+
 CAMLprim value
 mc_aes_rk_size (value rounds) {
   value s;
-  _mc_switch_accel(aesni,
-    s = mc_aes_rk_size_generic(rounds),
-    s = Val_int (_mc_aesni_rk_size (Int_val (rounds))))
+  // _mc_switch_accel(aesni,
+    s = mc_aes_rk_size_generic(rounds);
+    // s = Val_int (_mc_aesni_rk_size (Int_val (rounds))))
   return s;
 }
 
 CAMLprim value
 mc_aes_derive_e_key (value key, value off1, value rk, value rounds) {
-  _mc_switch_accel(aesni,
-    mc_aes_derive_e_key_generic(key, off1, rk, rounds),
-    _mc_aesni_derive_e_key (_ba_uint8_off (key, off1),
-                            _ba_uint8 (rk),
-                            Int_val (rounds)))
+  // _mc_switch_accel(aesni,
+    mc_aes_derive_e_key_generic(key, off1, rk, rounds);
+    // _mc_aesni_derive_e_key (_ba_uint8_off (key, off1),
+                            // _ba_uint8 (rk),
+                            // Int_val (rounds)))
   return Val_unit;
 }
 
 CAMLprim value
 mc_aes_derive_d_key (value key, value off1, value kr, value rounds, value rk) {
-  _mc_switch_accel(aesni,
-    mc_aes_derive_d_key_generic(key, off1, kr, rounds, rk),
-    _mc_aesni_derive_d_key (_ba_uint8_off (key, off1),
-                            _ba_uint8 (kr),
-                            Int_val (rounds),
-                            Is_block(rk) ? _ba_uint8(Field(rk, 0)) : 0))
+  // _mc_switch_accel(aesni,
+    mc_aes_derive_d_key_generic(key, off1, kr, rounds, rk);
+    // _mc_aesni_derive_d_key (_ba_uint8_off (key, off1),
+                            // _ba_uint8 (kr),
+                            // Int_val (rounds),
+                            // Is_block(rk) ? _ba_uint8(Field(rk, 0)) : 0))
   return Val_unit;
 }
 
 CAMLprim value
 mc_aes_enc (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
-  _mc_switch_accel(aesni,
-    mc_aes_enc_generic(src, off1, dst, off2, rk, rounds, blocks),
-    _mc_aesni_enc_blocks ( _ba_uint8_off (src, off1),
-                           _ba_uint8_off (dst, off2),
-                           _ba_uint8 (rk),
-                           Int_val (rounds),
-                           Int_val (blocks) ))
+  // _mc_switch_accel(aesni,
+    mc_aes_enc_generic(src, off1, dst, off2, rk, rounds, blocks);
+    // _mc_aesni_enc_blocks ( _ba_uint8_off (src, off1),
+                           // _ba_uint8_off (dst, off2),
+                           // _ba_uint8 (rk),
+                           // Int_val (rounds),
+                           // Int_val (blocks) ))
   return Val_unit;
 }
 
 CAMLprim value
 mc_aes_dec (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
-  _mc_switch_accel(aesni,
-    mc_aes_dec_generic(src, off1, dst, off2, rk, rounds, blocks),
-    _mc_aesni_dec_blocks ( _ba_uint8_off (src, off1),
-                           _ba_uint8_off (dst, off2),
-                           _ba_uint8 (rk),
-                           Int_val (rounds),
-                           Int_val (blocks) ))
+  // _mc_switch_accel(aesni,
+    mc_aes_dec_generic(src, off1, dst, off2, rk, rounds, blocks);
+    // _mc_aesni_dec_blocks ( _ba_uint8_off (src, off1),
+                           // _ba_uint8_off (dst, off2),
+                           // _ba_uint8 (rk),
+                           // Int_val (rounds),
+                           // Int_val (blocks) ))
   return Val_unit;
 }
 
 CAMLprim value mc_aes_mode (__unit ()) {
+  init_static_array();
   value enabled = 0;
-  _mc_switch_accel(aesni,
-    enabled = 0,
-    enabled = 1)
+  // _mc_switch_accel(aesni,
+    enabled = 0;
+    // enabled = 1)
   return Val_int (enabled);
 }
 
 __define_bc_7 (mc_aes_enc)
 __define_bc_7 (mc_aes_dec)
+

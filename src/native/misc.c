@@ -1,6 +1,6 @@
 #include "mirage_crypto.h"
 
-static inline void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
+/*static inline*/ void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
 #ifdef ARCH_64BIT
   uint64_t s;
   for (; n >= 8; n -= 8, src += 8, dst += 8)
@@ -14,7 +14,7 @@ static inline void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
   for (; n --; ++ src, ++ dst) *dst = *src ^ *dst;
 }
 
-static inline void _mc_count_8_be (uint64_t *init, uint64_t *dst, size_t blocks) {
+/*static inline*/ void _mc_count_8_be (uint64_t *init, uint64_t *dst, size_t blocks) {
   uint64_t qw = be64_to_cpu (*init);
   while (blocks --) *(dst ++) = cpu_to_be64 (qw ++);
 }
@@ -29,7 +29,7 @@ static inline void _mc_count_8_be (uint64_t *init, uint64_t *dst, size_t blocks)
  *   - Loop unrolling.
  *   - SSE carry bit handling.
  */
-static inline void _mc_count_16_be (uint64_t *init, uint64_t *dst, size_t blocks) {
+/*static inline*/ void _mc_count_16_be (uint64_t *init, uint64_t *dst, size_t blocks) {
   uint64_t qw1 = init[0],
            qw2 = be64_to_cpu (init[1]);
   for (; blocks --; dst += 2) {
@@ -40,7 +40,7 @@ static inline void _mc_count_16_be (uint64_t *init, uint64_t *dst, size_t blocks
 }
 
 /* The GCM counter. Counts on the last 32 bits, ignoring carry. */
-static inline void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t blocks) {
+/*static inline*/ void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t blocks) {
 
   uint64_t qw1 = init[0];
   uint32_t dw3 = ((uint32_t*) init)[2],
@@ -51,6 +51,9 @@ static inline void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t bloc
     ((uint32_t*) dst)[3] = cpu_to_be32 (dw4 ++);
   }
 }
+
+
+#ifndef FREESTANDING_CRYPTO
 
 CAMLprim value
 mc_xor_into_generic (value b1, value off1, value b2, value off2, value n) {
@@ -68,3 +71,6 @@ mc_xor_into_generic (value b1, value off1, value b2, value off2, value n) {
 __export_counter (mc_count_8_be, _mc_count_8_be)
 __export_counter (mc_count_16_be, _mc_count_16_be)
 __export_counter (mc_count_16_be_4_generic, _mc_count_16_be_4)
+
+
+#endif
