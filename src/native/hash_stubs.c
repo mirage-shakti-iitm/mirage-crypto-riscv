@@ -831,7 +831,8 @@ struct sha512_ctx_org
 
 
 
-#else
+#else // FREESTANDING_CRYPTO
+
 #include "mirage_crypto.h"
 
 #include "md5.h"
