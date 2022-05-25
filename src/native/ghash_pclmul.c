@@ -20,7 +20,10 @@
 #define __MC_GHASH_REFLECTED_REDUCE
 #define __MC_GHASH_AGGREGATED_REDUCE
 
-#include "mirage_crypto.h"
+#ifndef FREESTANDING_CRYPTO
+  #include "mirage_crypto.h"
+#endif // FREESTANDING_CRYPTO
+
 #ifdef __mc_ACCELERATE__
 
 #include <string.h>
@@ -188,34 +191,88 @@ static inline void __ghash (__m128i *m, __m128i hash[1], const __m128i *src, siz
 
 #endif /* __mc_ACCELERATE__ */
 
+#ifdef FREESTANDING_CRYPTO
+
+
+
+/*************************************************************** ghash_generic.c ***************************************************************/ 
+#define __MC_GHASH_LARGE_TABLES
+
+#if defined (__MC_GHASH_LARGE_TABLES)
+#define __t_width  8     // coefficient window
+#define __t_tables 16    // 128 / t_width
+#define __t_size   4096  // 2^t_width * t_tables
+#else
+#define __t_width  4
+#define __t_tables 32
+#define __t_size   512
+#endif
+
+extern void __derive (__int128 key, __int128 m);
+extern void __ghash (__int128 m, __int128 hash, __int128 src, size_t n);
+
+CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
+  
+  int num_elts_dst = 1;
+  for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
+  __int128 key_off_fpr = craft((uint64_t *) _ba_uint8_off (key, off), (uint64_t *) _ba_uint8 (key), (uint64_t *)((_ba_uint8 (key))+num_elts_key), 0);
+
+  __int128 m_fpr = craft(Bp_val (m), Bp_val (m), (__uint128_t *)((__uint128_t *)(Bp_val (m))+__t_size), 0);
+
+  __derive (key_off_fpr, m_fpr);
+  // __derive ((uint64_t *) _ba_uint8_off (key, off), (__uint128_t *) Bp_val (m));
+  return Val_unit;
+}
+
+CAMLprim value
+mc_ghash_generic (value m, value hash, value src, value off, value len) {
+  
+  int num_elts_dst = 1;
+  for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_src = num_elts_src * Caml_ba_array_val(src)->dim[i];
+  __int128 src_off_fpr = craft(_ba_uint8_off (src, off), _ba_uint8 (src), (uint8_t*)((_ba_uint8 (src))+num_elts_key), 0);
+
+  __int128 m_fpr = craft(Bp_val (m), Bp_val (m), (__uint128_t *)((__uint128_t *)(Bp_val (m))+__t_size), 0);
+  __int128 hash_fpr = craft(Bp_val (hash), Bp_val (hash), (uint64_t *)((uint64_t *)(Bp_val (hash))+2), 0);
+
+  __ghash (m_fpr, hash_fpr, src_off_fpr, Int_val (len));
+  // __ghash ((__uint128_t *) Bp_val (m), (uint64_t *) Bp_val (hash),_ba_uint8_off (src, off), Int_val (len) );
+  return Val_unit;
+}
+
+
+/*************************************************************** ghash_generic.c ***************************************************************/ 
+
+
+#endif // FREESTANDING_CRYPTO
+
 CAMLprim value mc_ghash_key_size (__unit ()) {
   value s;
-  _mc_switch_accel(pclmul,
-    s = mc_ghash_key_size_generic(Val_unit),
-    s = Val_int (__keys * 16))
+  // _mc_switch_accel(pclmul,
+    s = mc_ghash_key_size_generic(Val_unit);
+    // s = Val_int (__keys * 16))
   return s;
 }
 
 CAMLprim value mc_ghash_init_key (value key, value off, value m) {
-  _mc_switch_accel(pclmul,
-    mc_ghash_init_key_generic(key, off, m),
-    __derive ((__m128i *) _ba_uint8_off (key, off), (__m128i *) Bp_val (m)))
+  // _mc_switch_accel(pclmul,
+  mc_ghash_init_key_generic(key, off, m);
+    // __derive ((__m128i *) _ba_uint8_off (key, off), (__m128i *) Bp_val (m)))
   return Val_unit;
 }
 
 CAMLprim value
 mc_ghash (value k, value hash, value src, value off, value len) {
-  _mc_switch_accel(pclmul,
-    mc_ghash_generic(k, hash, src, off, len),
-    __ghash ( (__m128i *) Bp_val (k), (__m128i *) Bp_val (hash),
-      (__m128i *) _ba_uint8_off (src, off), Int_val (len) ))
+  // _mc_switch_accel(pclmul,
+    mc_ghash_generic(k, hash, src, off, len);
+    // __ghash ( (__m128i *) Bp_val (k), (__m128i *) Bp_val (hash),
+    //   (__m128i *) _ba_uint8_off (src, off), Int_val (len) ))
   return Val_unit;
 }
 
 CAMLprim value mc_ghash_mode (__unit ()) {
   value enabled = 0;
-  _mc_switch_accel(pclmul,
-    enabled = 0,
-    enabled = 1)
+  // _mc_switch_accel(pclmul,
+    enabled = 0;
+    // enabled = 1)
   return Val_int (enabled);
 }

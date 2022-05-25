@@ -60,7 +60,7 @@ static inline __uint128_t __gfmul (__uint128_t a, __uint128_t b) {
 
 // NB Exponents are reversed.
 // TODO: Fast table derivation.
-static inline void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
+/*static inline*/ void __derive (uint64_t key[2], __uint128_t m[__t_size]) {
   __uint128_t e = 1 << (__t_width - 1),
               h = __load_128_t (key);
   for (int i = 0; i < __t_tables; i ++, e <<= __t_width) {
@@ -78,7 +78,7 @@ static inline __uint128_t __gfmul_tab (__uint128_t m[__t_size], __uint128_t x) {
   return r;
 }
 
-static inline void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
+/*static inline*/ void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uint8_t *src, size_t n) {
   __uint128_t acc = __load_128_t (hash);
   for (; n >= 16; src += 16, n -= 16)
     acc = __gfmul_tab (m, acc ^ __load_128_t ((uint64_t *) src));
@@ -86,6 +86,8 @@ static inline void __ghash (__uint128_t m[__t_size], uint64_t hash[2], const uin
     acc = __gfmul_tab (m, acc ^ __load_128_t_with_padding (src, n));
   __store_128_t (hash, acc);
 }
+
+#ifndef FREESTANDING_CRYPTO
 
 CAMLprim value mc_ghash_key_size_generic (__unit ()) {
   return Val_int (sizeof (__uint128_t) * __t_size);
@@ -102,5 +104,6 @@ mc_ghash_generic (value m, value hash, value src, value off, value len) {
            _ba_uint8_off (src, off), Int_val (len) );
   return Val_unit;
 }
+#endif // FREESTANDING_CRYPTO
 
 #endif /* ARCH_64BIT */
