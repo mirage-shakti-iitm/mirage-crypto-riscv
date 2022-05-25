@@ -66,10 +66,10 @@ mc_xor_into_generic (value b1, value off1, value b2, value off2, value n) {
 CAMLprim value mc_count_16_be_4_generic (value ctr, value dst, value off, value blocks) {  
   int num_elts_dst = 1;
   for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_dst = num_elts_dst * Caml_ba_array_val(dst)->dim[i];
-  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off1), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
+  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
 
   // some places 16 bytes allocated, some places only 8 bytes. How to get lenght from Bp_val()
-  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((Bp_val (ctr))+16), 0);
+  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((char*)(Bp_val (ctr))+16), 0);
   
   _mc_count_16_be_4(ctr_16_fpr, dst_off_fpr, Long_val (blocks));
   // _mc_count_16_be_4 ( (uint64_t*) Bp_val (ctr), (uint64_t*) _ba_uint8_off (dst, off), Long_val (blocks) );
@@ -79,10 +79,10 @@ CAMLprim value mc_count_16_be_4_generic (value ctr, value dst, value off, value 
 CAMLprim value mc_count_16_be (value ctr, value dst, value off, value blocks) {  
   int num_elts_dst = 1;
   for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_dst = num_elts_dst * Caml_ba_array_val(dst)->dim[i];
-  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off1), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
+  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
 
   // some places 16 bytes allocated, some places only 8 bytes. How to get lenght from Bp_val()
-  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((Bp_val (ctr))+16), 0);
+  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((char*)(Bp_val (ctr))+16), 0);
   
   _mc_count_16_be(ctr_16_fpr, dst_off_fpr, Long_val (blocks));
   // _mc_count_16_be ( (uint64_t*) Bp_val (ctr), (uint64_t*) _ba_uint8_off (dst, off), Long_val (blocks) );
@@ -92,10 +92,10 @@ CAMLprim value mc_count_16_be (value ctr, value dst, value off, value blocks) {
 CAMLprim value mc_count_8_be (value ctr, value dst, value off, value blocks) {  
   int num_elts_dst = 1;
   for (int i = 0; i < Caml_ba_array_val(dst)->num_dims; i++) num_elts_dst = num_elts_dst * Caml_ba_array_val(dst)->dim[i];
-  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off1), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
+  __int128 dst_off_fpr = craft(_ba_uint8_off (dst, off), _ba_uint8 (dst), (uint8_t*)((_ba_uint8 (dst))+num_elts_dst), 0);
 
   // some places 16 bytes allocated, some places only 8 bytes. How to get lenght from Bp_val()
-  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((Bp_val (ctr))+16), 0);
+  __int128 ctr_16_fpr = craft(Bp_val (ctr), Bp_val (ctr), (char*)((char*)(Bp_val (ctr))+16), 0);
   
   _mc_count_8_be(ctr_16_fpr, dst_off_fpr, Long_val (blocks));
   // _mc_count_8_be ( (uint64_t*) Bp_val (ctr), (uint64_t*) _ba_uint8_off (dst, off), Long_val (blocks) );
