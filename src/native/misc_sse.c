@@ -2,6 +2,9 @@
   #include "mirage_crypto.h"
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 #ifdef __mc_ACCELERATE__
 
 static inline void xor_into (uint8_t *src, uint8_t *dst, size_t n) {
