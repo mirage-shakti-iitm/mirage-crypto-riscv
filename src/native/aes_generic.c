@@ -12,17 +12,17 @@
 
 #define FULL_UNROLL
 
-static const uint32_t *Te0; //[256]
-static const uint32_t *Te1; //[256]
-static const uint32_t *Te2; //[256]
-static const uint32_t *Te3; //[256]
-static const uint32_t *Te4; //[256]
+static /*const*/ uint32_t *Te0; //[256]
+static /*const*/ uint32_t *Te1; //[256]
+static /*const*/ uint32_t *Te2; //[256]
+static /*const*/ uint32_t *Te3; //[256]
+static /*const*/ uint32_t *Te4; //[256]
 
-static const uint32_t *Td0; //[256]
-static const uint32_t *Td1; //[256]
-static const uint32_t *Td2; //[256]
-static const uint32_t *Td3; //[256]
-static const uint32_t *Td4; //[256]
+static /*const*/ uint32_t *Td0; //[256]
+static /*const*/ uint32_t *Td1; //[256]
+static /*const*/ uint32_t *Td2; //[256]
+static /*const*/ uint32_t *Td3; //[256]
+static /*const*/ uint32_t *Td4; //[256]
 
 static /*const*/ uint32_t *rcon; //[10]
 
@@ -561,7 +561,7 @@ void init_static_array(){
 }
 
 void init_actual(){
-Td0 = malloc(sizeof(uint32_t) * 256)
+Td0 = malloc(sizeof(uint32_t) * 256);
 Td0[0] = 0x51f4a750U;
 Td0[1] = 0x7e416553U;
 Td0[2] = 0x1a17a4c3U;
@@ -818,7 +818,7 @@ Td0[252] = 0x7bcb8461U;
 Td0[253] = 0xd532b670U;
 Td0[254] = 0x486c5c74U;
 Td0[255] = 0xd0b85742U;
-Td1 = malloc(sizeof(uint32_t) * 256)
+Td1 = malloc(sizeof(uint32_t) * 256);
 Td1[0] = 0x5051f4a7U;
 Td1[1] = 0x537e4165U;
 Td1[2] = 0xc31a17a4U;
@@ -1075,7 +1075,7 @@ Td1[252] = 0x617bcb84U;
 Td1[253] = 0x70d532b6U;
 Td1[254] = 0x74486c5cU;
 Td1[255] = 0x42d0b857U;
-Td2 = malloc(sizeof(uint32_t) * 256)
+Td2 = malloc(sizeof(uint32_t) * 256);
 Td2[0] = 0xa75051f4U;
 Td2[1] = 0x65537e41U;
 Td2[2] = 0xa4c31a17U;
@@ -1332,7 +1332,7 @@ Td2[252] = 0x84617bcbU;
 Td2[253] = 0xb670d532U;
 Td2[254] = 0x5c74486cU;
 Td2[255] = 0x5742d0b8U;
-Td3 = malloc(sizeof(uint32_t) * 256)
+Td3 = malloc(sizeof(uint32_t) * 256);
 Td3[0] = 0xf4a75051U;
 Td3[1] = 0x4165537eU;
 Td3[2] = 0x17a4c31aU;
@@ -1589,7 +1589,7 @@ Td3[252] = 0xcb84617bU;
 Td3[253] = 0x32b670d5U;
 Td3[254] = 0x6c5c7448U;
 Td3[255] = 0xb85742d0U;
-Td4 = malloc(sizeof(uint32_t) * 256)
+Td4 = malloc(sizeof(uint32_t) * 256);
 Td4[0] = 0x52525252U;
 Td4[1] = 0x09090909U;
 Td4[2] = 0x6a6a6a6aU;
@@ -1846,7 +1846,7 @@ Td4[252] = 0x55555555U;
 Td4[253] = 0x21212121U;
 Td4[254] = 0x0c0c0c0cU;
 Td4[255] = 0x7d7d7d7dU;
-Te0 = malloc(sizeof(uint32_t) * 256)
+Te0 = malloc(sizeof(uint32_t) * 256);
 Te0[0] = 0xc66363a5U;
 Te0[1] = 0xf87c7c84U;
 Te0[2] = 0xee777799U;
@@ -2103,7 +2103,7 @@ Te0[252] = 0x7bb0b0cbU;
 Te0[253] = 0xa85454fcU;
 Te0[254] = 0x6dbbbbd6U;
 Te0[255] = 0x2c16163aU;
-Te1 = malloc(sizeof(uint32_t) * 256)
+Te1 = malloc(sizeof(uint32_t) * 256);
 Te1[0] = 0xa5c66363U;
 Te1[1] = 0x84f87c7cU;
 Te1[2] = 0x99ee7777U;
@@ -2360,7 +2360,7 @@ Te1[252] = 0xcb7bb0b0U;
 Te1[253] = 0xfca85454U;
 Te1[254] = 0xd66dbbbbU;
 Te1[255] = 0x3a2c1616U;
-Te2 = malloc(sizeof(uint32_t) * 256)
+Te2 = malloc(sizeof(uint32_t) * 256);
 Te2[0] = 0x63a5c663U;
 Te2[1] = 0x7c84f87cU;
 Te2[2] = 0x7799ee77U;
@@ -2617,7 +2617,7 @@ Te2[252] = 0xb0cb7bb0U;
 Te2[253] = 0x54fca854U;
 Te2[254] = 0xbbd66dbbU;
 Te2[255] = 0x163a2c16U;
-Te3 = malloc(sizeof(uint32_t) * 256)
+Te3 = malloc(sizeof(uint32_t) * 256);
 Te3[0] = 0x6363a5c6U;
 Te3[1] = 0x7c7c84f8U;
 Te3[2] = 0x777799eeU;
@@ -2874,7 +2874,7 @@ Te3[252] = 0xb0b0cb7bU;
 Te3[253] = 0x5454fca8U;
 Te3[254] = 0xbbbbd66dU;
 Te3[255] = 0x16163a2cU;
-Te4 = malloc(sizeof(uint32_t) * 256)
+Te4 = malloc(sizeof(uint32_t) * 256);
 Te4[0] = 0x63636363U;
 Te4[1] = 0x7c7c7c7cU;
 Te4[2] = 0x77777777U;
@@ -3131,7 +3131,7 @@ Te4[252] = 0xb0b0b0b0U;
 Te4[253] = 0x54545454U;
 Te4[254] = 0xbbbbbbbbU;
 Te4[255] = 0x16161616U;
-rcon = malloc(sizeof(uint32_t) * 10)
+rcon = malloc(sizeof(uint32_t) * 10);
 rcon[0] = 0x01000000;
 rcon[1] = 0x02000000;
 rcon[2] = 0x04000000;
