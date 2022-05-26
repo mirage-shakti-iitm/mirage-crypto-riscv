@@ -89,10 +89,6 @@ static inline __uint128_t __gfmul_tab (__uint128_t m[__t_size], __uint128_t x) {
 
 #ifndef FREESTANDING_CRYPTO
 
-CAMLprim value mc_ghash_key_size_generic (__unit ()) {
-  return Val_int (sizeof (__uint128_t) * __t_size);
-}
-
 CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
   __derive ((uint64_t *) _ba_uint8_off (key, off), (__uint128_t *) Bp_val (m));
   return Val_unit;
@@ -105,5 +101,9 @@ mc_ghash_generic (value m, value hash, value src, value off, value len) {
   return Val_unit;
 }
 #endif // FREESTANDING_CRYPTO
+
+CAMLprim value mc_ghash_key_size_generic (__unit ()) {
+  return Val_int (sizeof (__uint128_t) * __t_size);
+}
 
 #endif /* ARCH_64BIT */
