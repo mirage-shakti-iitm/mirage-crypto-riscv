@@ -552,7 +552,7 @@ static void mc_rijndaelDecrypt(const uint32_t *rk, int nrounds, const uint8_t ci
   __blocked_loop (mc_rijndaelDecrypt, src, dst, rk, rounds, blocks);
 }
 
-
+int init_called = 0;
 void init_static_array(){
   if(!init_called){
     init_called = 1;
