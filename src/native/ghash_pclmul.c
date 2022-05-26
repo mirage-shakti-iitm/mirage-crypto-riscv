@@ -20,9 +20,7 @@
 #define __MC_GHASH_REFLECTED_REDUCE
 #define __MC_GHASH_AGGREGATED_REDUCE
 
-#ifndef FREESTANDING_CRYPTO
-  #include "mirage_crypto.h"
-#endif // FREESTANDING_CRYPTO
+#include "mirage_crypto.h"
 
 #ifdef __mc_ACCELERATE__
 
