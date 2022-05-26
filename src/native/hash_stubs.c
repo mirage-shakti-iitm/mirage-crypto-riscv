@@ -321,6 +321,7 @@ struct sha256_ctx_org
 };
                                                                         
 #define sha224_ctx_fat_v    sha256_ctx_fat_v
+#define sha224_ctx_org    sha256_ctx_org
 
   CAMLprim value                                                             
   mc_sha224_init (value ctx) {                                         
@@ -568,6 +569,7 @@ struct sha512_ctx_org
 };
                                                                         
 #define sha384_ctx_fat_v    sha512_ctx_fat_v
+#define sha384_ctx_org    sha512_ctx_org
 
   CAMLprim value                                                             
   mc_sha384_init (value ctx) {                                         
