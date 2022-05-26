@@ -378,7 +378,7 @@ mc_aes_derive_e_key_generic (value key, value off1, value rk, value rounds) {
   
   int num_elts_key = 1;
   for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
-  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_key), 0); 
+  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(key)+num_elts_key), 0); 
 
   mc_rijndaelSetupEncrypt(rk_fpr, key_off_fpr, keybits_of_r (Int_val (rounds)));
 
@@ -394,7 +394,7 @@ mc_aes_derive_d_key_generic (value key, value off1, value kr, value rounds, valu
   
   int num_elts_key = 1;
   for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
-  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_key), 0);
+  __int128 key_off_fpr = craft(_ba_uint8_off (key, off1), (uint8_t*)Caml_ba_data_val(key), (uint8_t*)((uint8_t*)Caml_ba_data_val(key)+num_elts_key), 0);
 
   mc_rijndaelSetupDecrypt(kr_fpr, key_off_fpr, keybits_of_r (Int_val (rounds)));
 
