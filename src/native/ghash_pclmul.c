@@ -211,7 +211,7 @@ extern void __ghash (__int128 m, __int128 hash, __int128 src, size_t n);
 
 CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
   
-  int num_elts_dst = 1;
+  int num_elts_key = 1;
   for (int i = 0; i < Caml_ba_array_val(key)->num_dims; i++) num_elts_key = num_elts_key * Caml_ba_array_val(key)->dim[i];
   __int128 key_off_fpr = craft((uint64_t *) _ba_uint8_off (key, off), (uint64_t *) _ba_uint8 (key), (uint64_t *)((_ba_uint8 (key))+num_elts_key), 0);
 
@@ -225,9 +225,9 @@ CAMLprim value mc_ghash_init_key_generic (value key, value off, value m) {
 CAMLprim value
 mc_ghash_generic (value m, value hash, value src, value off, value len) {
   
-  int num_elts_dst = 1;
+  int num_elts_src = 1;
   for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_src = num_elts_src * Caml_ba_array_val(src)->dim[i];
-  __int128 src_off_fpr = craft(_ba_uint8_off (src, off), _ba_uint8 (src), (uint8_t*)((_ba_uint8 (src))+num_elts_key), 0);
+  __int128 src_off_fpr = craft(_ba_uint8_off (src, off), _ba_uint8 (src), (uint8_t*)((_ba_uint8 (src))+num_elts_src), 0);
 
   __int128 m_fpr = craft(Bp_val (m), Bp_val (m), (__uint128_t *)((__uint128_t *)(Bp_val (m))+__t_size), 0);
   __int128 hash_fpr = craft(Bp_val (hash), Bp_val (hash), (uint64_t *)((uint64_t *)(Bp_val (hash))+2), 0);
