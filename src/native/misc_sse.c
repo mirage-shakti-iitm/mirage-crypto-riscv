@@ -112,6 +112,16 @@ CAMLprim value mc_count_8_be (value ctr, value dst, value off, value blocks) {
 
 /*************************************************************** misc.c ***************************************************************/
 
+#endif // FREESTANDING_CRYPTO
+
+CAMLprim value
+mc_xor_into (value b1, value off1, value b2, value off2, value n) {
+  // _mc_switch_accel(ssse3,
+    mc_xor_into_generic(b1, off1, b2, off2, n);
+    // xor_into (_ba_uint8_off (b1, off1), _ba_uint8_off (b2, off2), Int_val (n)))
+  return Val_unit;
+}
+
 // #define __export_counter(name, f)
 CAMLprim value mc_count_16_be_4 (value ctr, value dst, value off, value blocks) {  
     // _mc_switch_accel(ssse3,                                     
@@ -123,27 +133,6 @@ CAMLprim value mc_count_16_be_4 (value ctr, value dst, value off, value blocks) 
 
 // __export_counter(mc_count_16_be_4, _mc_count_16_be_4)
 
-
-#endif // FREESTANDING_CRYPTO
-
-CAMLprim value
-mc_xor_into (value b1, value off1, value b2, value off2, value n) {
-  // _mc_switch_accel(ssse3,
-    mc_xor_into_generic(b1, off1, b2, off2, n);
-    // xor_into (_ba_uint8_off (b1, off1), _ba_uint8_off (b2, off2), Int_val (n)))
-  return Val_unit;
-}
-
-#define __export_counter(name, f)                                        \
-  CAMLprim value name (value ctr, value dst, value off, value blocks) {  \
-    _mc_switch_accel(ssse3,                                     \
-      name##_generic (ctr, dst, off, blocks),                            \
-      f ( (uint64_t*) Bp_val (ctr),                                      \
-          (uint64_t*) _ba_uint8_off (dst, off), Long_val (blocks) ))     \
-    return Val_unit;                                                     \
-  }
-
-__export_counter(mc_count_16_be_4, _mc_count_16_be_4)
 
 CAMLprim value mc_misc_mode (__unit ()) {
   value enabled = 0;
