@@ -1,9 +1,10 @@
-#ifndef FREESTANDING_CRYPTO
-  #include "mirage_crypto.h"
-#endif
+#include "mirage_crypto.h"
+
 
 #include <stdint.h>
 #include <string.h>
+#include <caml/mlvalues.h>
+#include <caml/bigarray.h>
 
 #ifdef __mc_ACCELERATE__
 

@@ -84,6 +84,10 @@ extern struct _mc_cpu_features mc_detected_cpu_features;
 
 /* Signature of generic functions */
 
+CAMLprim value mc_ghash_key_size_generic (__unit ());
+
+#ifndef FREESTANDING_CRYPTO
+
 CAMLprim value mc_aes_rk_size_generic (value rounds);
 
 CAMLprim value
@@ -98,7 +102,7 @@ mc_aes_enc_generic (value src, value off1, value dst, value off2, value rk, valu
 CAMLprim value
 mc_aes_dec_generic (value src, value off1, value dst, value off2, value rk, value rounds, value blocks);
 
-CAMLprim value mc_ghash_key_size_generic (__unit ());
+
 
 CAMLprim value mc_ghash_init_key_generic (value key, value off, value m);
 
@@ -110,5 +114,6 @@ mc_xor_into_generic (value b1, value off1, value b2, value off2, value n);
 
 CAMLprim value
 mc_count_16_be_4_generic (value ctr, value dst, value off, value blocks);
+#endif // FREESTANDING_CRYPTO
 
 #endif /* H__MIRAGE_CRYPTO */
