@@ -345,6 +345,9 @@ static inline void _mc_aesni_dec_blocks (const uint8_t *src, uint8_t *dst, const
 #endif /* __mc_ACCELERATE__ */
 
 #ifdef FREESTANDING_CRYPTO
+
+#include <shakti_ms/fat_pointer.h>
+
 /*************************************************** aes_generic.c ***************************************************/
 #define KEYLENGTH(keybits) ((keybits)/8)
 #define RKLENGTH(keybits)  ((keybits)/8+28)

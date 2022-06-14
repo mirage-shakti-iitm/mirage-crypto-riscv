@@ -45,6 +45,7 @@ static inline void _mc_count_16_be_4 (uint64_t *init, uint64_t *dst, size_t bloc
 #endif /* __mc_ACCELERATE__ */
 
 #ifdef FREESTANDING_CRYPTO
+#include <shakti_ms/fat_pointer.h>
 
 extern void xor_into (__int128 src, __int128 dst, size_t n);
 extern void _mc_count_8_be (__int128 init, __int128 dst, size_t blocks);

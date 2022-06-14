@@ -191,6 +191,7 @@ static inline void __ghash (__m128i *m, __m128i hash[1], const __m128i *src, siz
 
 #ifdef FREESTANDING_CRYPTO
 
+#include <shakti_ms/fat_pointer.h>
 
 
 /*************************************************************** ghash_generic.c ***************************************************************/ 
