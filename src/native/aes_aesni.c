@@ -407,6 +407,7 @@ mc_aes_derive_d_key_generic (value key, value off1, value kr, value rounds, valu
 CAMLprim value
 mc_aes_enc_generic (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
   init_static_array();
+  printf("src : %x, off1 : %x, dst : %x, off2 : %x, rk : %x, rounds : %x, blocks : %x", src, off1, dst, off2, rk, rounds, blocks);
   int num_elts_rk = 1;
   for (int i = 0; i < Caml_ba_array_val(rk)->num_dims; i++) num_elts_rk = num_elts_rk * Caml_ba_array_val(rk)->dim[i];
   __int128 rk_fpr = craft(_ba_uint32 (rk), _ba_uint32 (rk), (uint32_t*)((_ba_uint32 (rk))+num_elts_rk), 0);
