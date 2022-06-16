@@ -36,9 +36,6 @@ extern void _mc_sha512_finalize(__int128 ctx, __int128 out);
 /******************************************** MD5 ********************************************/
 // #include "md5.h"
 
-#define MD5_DIGEST_SIZE  16
-#define MD5_CTX_SIZE   sizeof(struct md5_ctx_org)
-
 struct md5_ctx_fat_v
 {
   uint64_t sz;
@@ -52,7 +49,10 @@ struct md5_ctx_org
   uint8_t  buf[64];
   uint32_t h[4];
 };
-                                                                        
+
+#define MD5_DIGEST_SIZE  16
+#define MD5_CTX_SIZE   sizeof(struct md5_ctx_org)
+
   CAMLprim value                                                             
   mc_md5_init (value ctx) {                                         
     struct md5_ctx_org *ctx_org = (struct md5_ctx_org*) Bytes_val (ctx);  
@@ -168,8 +168,6 @@ struct md5_ctx_org
 /******************************************** SHA1 ********************************************/
 // #include "sha1.h"
 
-#define SHA1_DIGEST_SIZE  20
-#define SHA1_CTX_SIZE   sizeof(struct sha1_ctx_org)
 
 struct sha1_ctx_fat_v
 {
@@ -184,6 +182,10 @@ struct sha1_ctx_org
   uint8_t  buf[64];
   uint32_t h[5];
 };                                                                      
+
+#define SHA1_DIGEST_SIZE  20
+#define SHA1_CTX_SIZE   sizeof(struct sha1_ctx_org)
+
 
   CAMLprim value                                                             
   mc_sha1_init (value ctx) {                                         
@@ -300,12 +302,6 @@ struct sha1_ctx_org
 /******************************************** SHA224 - SHA256 ********************************************/
 // #include "sha256.h"
 
-#define SHA224_DIGEST_SIZE  28
-#define SHA224_CTX_SIZE   sizeof(struct sha224_ctx_org)
-
-#define SHA256_DIGEST_SIZE  32
-#define SHA256_CTX_SIZE   sizeof(struct sha256_ctx_org)
-
 struct sha256_ctx_fat_v
 {
   uint64_t sz;
@@ -322,6 +318,12 @@ struct sha256_ctx_org
                                                                         
 #define sha224_ctx_fat_v    sha256_ctx_fat_v
 #define sha224_ctx_org    sha256_ctx_org
+
+#define SHA224_DIGEST_SIZE  28
+#define SHA224_CTX_SIZE   sizeof(struct sha224_ctx_org)
+
+#define SHA256_DIGEST_SIZE  32
+#define SHA256_CTX_SIZE   sizeof(struct sha256_ctx_org)
 
   CAMLprim value                                                             
   mc_sha224_init (value ctx) {                                         
@@ -548,11 +550,6 @@ struct sha256_ctx_org
 /******************************************** SHA384 - SHA512 ********************************************/
 // #include "sha512.h"
 
-#define SHA384_DIGEST_SIZE  48
-#define SHA384_CTX_SIZE   sizeof(struct sha384_ctx_org)
-
-#define SHA512_DIGEST_SIZE  64
-#define SHA512_CTX_SIZE   sizeof(struct sha512_ctx_org)
 
 struct sha512_ctx_fat_v
 {
@@ -570,6 +567,12 @@ struct sha512_ctx_org
                                                                         
 #define sha384_ctx_fat_v    sha512_ctx_fat_v
 #define sha384_ctx_org    sha512_ctx_org
+
+#define SHA384_DIGEST_SIZE  48
+#define SHA384_CTX_SIZE   sizeof(struct sha384_ctx_org)
+
+#define SHA512_DIGEST_SIZE  64
+#define SHA512_CTX_SIZE   sizeof(struct sha512_ctx_org)
 
   CAMLprim value                                                             
   mc_sha384_init (value ctx) {                                         
