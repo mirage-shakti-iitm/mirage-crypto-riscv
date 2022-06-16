@@ -460,8 +460,17 @@ struct sha256_ctx_org
     for(int i=0; i<128; i++){                                                
       ctx_org->buf[i] = buf[i];                                              
     }                                                                        
-    ctx_org->sz = ctx_new->sz;                                           
-                                                                             
+    ctx_org->sz = ctx_new->sz;                                   
+
+
+
+    printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
+    for(int i=0; i<8; i++)
+      printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
+    for(int i=0; i<128; i++)
+      printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
+    
+
     return Val_unit;                                                         
   }                                                                          
                                                                              
@@ -845,6 +854,25 @@ struct sha512_ctx_org
 #include "sha256.h"
 #include "sha512.h"
 
+  CAMLprim value                                                             
+  mc_sha256_init (value ctx) {                                         
+    // struct sha256_ctx_org *ctx_org = (struct sha256_ctx_org*) Bytes_val (ctx);  
+
+    _mc_sha256_init ((struct sha256_ctx *) Bytes_val (ctx));
+    struct sha256_ctx *ctx_org = Bytes_val(ctx); 
+
+    printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
+    for(int i=0; i<8; i++)
+      printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
+    for(int i=0; i<128; i++)
+      printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
+    
+
+    return Val_unit;                                                         
+  }
+
+
+
 #define __define_hash(name, upper)                                           \
                                                                              \
   CAMLprim value                                                             \
@@ -876,7 +904,7 @@ struct sha512_ctx_org
 __define_hash (md5, MD5)
 __define_hash (sha1, SHA1)
 __define_hash (sha224, SHA224)
-__define_hash (sha256, SHA256)
+// __define_hash (sha256, SHA256)
 __define_hash (sha384, SHA384)
 __define_hash (sha512, SHA512)
 #endif
