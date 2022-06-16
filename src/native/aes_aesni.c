@@ -406,18 +406,12 @@ mc_aes_derive_d_key_generic (value key, value off1, value kr, value rounds, valu
 
 CAMLprim value
 mc_aes_enc_generic (value src, value off1, value dst, value off2, value rk, value rounds, value blocks) {
-  printf("Cipher text 1: ");
-  for(int i=0; i<16; i++){
-    printf("%x", ((uint8_t*)Caml_ba_data_val(dst))[i]);
-  }
-  printf("\n");
   init_static_array();
   int num_elts_rk = 1;
   for (int i = 0; i < Caml_ba_array_val(rk)->num_dims; i++) num_elts_rk = num_elts_rk * Caml_ba_array_val(rk)->dim[i];
   __int128 rk_fpr = craft(_ba_uint32 (rk), _ba_uint32 (rk), (uint32_t*)((_ba_uint32 (rk))+num_elts_rk), 0);
   
-  printf("src : %x, off1 : %x, dst : %x, off2 : %x, rk : %x, rounds : %x, blocks : %x, num_elts_rk = %x\n", src, off1, dst, off2, rk, rounds, blocks, num_elts_rk);
-
+  
   int num_elts_src = 1;
   for (int i = 0; i < Caml_ba_array_val(src)->num_dims; i++) num_elts_src = num_elts_src * Caml_ba_array_val(src)->dim[i];
   __int128 src_off_fpr = craft(_ba_uint8_off (src, off1), (uint8_t*)Caml_ba_data_val(src), (uint8_t*)((uint8_t*)Caml_ba_data_val(src)+num_elts_src), 0);
@@ -431,12 +425,7 @@ mc_aes_enc_generic (value src, value off1, value dst, value off2, value rk, valu
 
   _mc_aes_enc_blocks(src_off_fpr, dst_off_fpr, rk_fpr, Int_val (rounds), Int_val (blocks));
 
-  printf("Cipher text 2: ");
-  for(int i=0; i<16; i++){
-    printf("%x", ((uint8_t*)Caml_ba_data_val(dst))[i]);
-  }
-  printf("\n");
-
+  
   return Val_unit;
 }
 
