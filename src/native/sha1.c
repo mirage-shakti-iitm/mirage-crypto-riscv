@@ -28,7 +28,7 @@
 
 void _mc_sha1_init(struct sha1_ctx *ctx)
 {
-	memset(ctx, 0, sizeof(*ctx));
+	// memset(ctx, 0, sizeof(*ctx));
 
 	ctx->h[0] = 0x67452301;
 	ctx->h[1] = 0xefcdab89;
