@@ -61,7 +61,7 @@ mc_xor_into_generic (value b1, value off1, value b2, value off2, value n) {
 
   int num_elts_b2 = 1;
   for (int i = 0; i < Caml_ba_array_val(b2)->num_dims; i++) num_elts_b2 = num_elts_b2 * Caml_ba_array_val(b2)->dim[i];
-  __int128 b2_off_fpr = craft(_ba_uint8_off (b2, off1), _ba_uint8 (b2), (uint8_t*)((_ba_uint8 (b2))+num_elts_b2), 0);
+  __int128 b2_off_fpr = craft(_ba_uint8_off (b2, off2), _ba_uint8 (b2), (uint8_t*)((_ba_uint8 (b2))+num_elts_b2), 0);
   
   xor_into(b1_off_fpr, b2_off_fpr, Int_val(n));
   // xor_into (_ba_uint8_off (b1, off1), _ba_uint8_off (b2, off2), Int_val (n));
