@@ -134,10 +134,7 @@ void _mc_sha224_init(struct sha224_ctx *ctx)
 void _mc_sha256_init(struct sha256_ctx *ctx)
 {
 	// memset(ctx, 0, sizeof(*ctx));
-int a[10];
-    for(int i=0;i<19;i++){
-      a[i] = 920*i;
-    }      
+  
 	ctx->h[0] = 0x6a09e667;
 	ctx->h[1] = 0xbb67ae85;
 	ctx->h[2] = 0x3c6ef372;

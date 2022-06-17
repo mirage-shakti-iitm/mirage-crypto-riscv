@@ -464,15 +464,6 @@ struct sha256_ctx_org
     }                                                                        
     ctx_org->sz = ctx_new->sz;                                   
 
-
-
-    // printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
-    // for(int i=0; i<8; i++)
-      // printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
-    // for(int i=0; i<128; i++)
-      // printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
-    
-
     return Val_unit;                                                         
   }                                                                          
                                                                              
@@ -862,13 +853,6 @@ struct sha512_ctx_org
 
     _mc_sha256_init ((struct sha256_ctx *) Bytes_val (ctx));
     struct sha256_ctx *ctx_org = Bytes_val(ctx); 
-
-    printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
-    for(int i=0; i<8; i++)
-      printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
-    for(int i=0; i<128; i++)
-      printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
-    
 
     return Val_unit;
   }
