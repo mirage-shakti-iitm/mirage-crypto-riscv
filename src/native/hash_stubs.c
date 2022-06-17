@@ -57,10 +57,10 @@ struct md5_ctx_org
   mc_md5_init (value ctx) {                                         
     struct md5_ctx_org *ctx_org = (struct md5_ctx_org*) Bytes_val (ctx);  
                                                                              
-    __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
+    __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));
     __int128 h_fpr = safemalloc(4*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct md5_ctx_fat_v));    
     struct md5_ctx_fat_v *ctx_new = (struct md5_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -88,8 +88,8 @@ struct md5_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(4*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct md5_ctx_fat_v));    
     struct md5_ctx_fat_v *ctx_new = (struct md5_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -126,8 +126,8 @@ struct md5_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(4*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct md5_ctx_fat_v));    
     struct md5_ctx_fat_v *ctx_new = (struct md5_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -193,8 +193,8 @@ struct sha1_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(5*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha1_ctx_fat_v));    
     struct sha1_ctx_fat_v *ctx_new = (struct sha1_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -222,8 +222,8 @@ struct sha1_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(5*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha1_ctx_fat_v));    
     struct sha1_ctx_fat_v *ctx_new = (struct sha1_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -260,8 +260,8 @@ struct sha1_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(64*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(5*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha1_ctx_fat_v));    
     struct sha1_ctx_fat_v *ctx_new = (struct sha1_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -331,8 +331,8 @@ struct sha256_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha224_ctx_fat_v));    
     struct sha224_ctx_fat_v *ctx_new = (struct sha224_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -360,8 +360,8 @@ struct sha256_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha224_ctx_fat_v));    
     struct sha224_ctx_fat_v *ctx_new = (struct sha224_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -396,10 +396,10 @@ struct sha256_ctx_org
   mc_sha224_finalize (value ctx, value dst, value off) {               
     struct sha224_ctx_org *ctx_org = (struct sha224_ctx_org*) Bytes_val (ctx);  
                                                                              
-    __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
-    __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));
+    __int128 h_fpr = safemalloc(8*sizeof(uint32_t));
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha224_ctx_fat_v));    
     struct sha224_ctx_fat_v *ctx_new = (struct sha224_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -442,8 +442,8 @@ struct sha256_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);                       
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);                             
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha256_ctx_fat_v));    
     struct sha256_ctx_fat_v *ctx_new = (struct sha256_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -480,8 +480,8 @@ struct sha256_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);                       
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);                             
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha256_ctx_fat_v));    
     struct sha256_ctx_fat_v *ctx_new = (struct sha256_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -518,8 +518,8 @@ struct sha256_ctx_org
                                                                              
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha256_ctx_fat_v));    
     struct sha256_ctx_fat_v *ctx_new = (struct sha256_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -591,8 +591,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha384_ctx_fat_v));    
     struct sha384_ctx_fat_v *ctx_new = (struct sha384_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -624,8 +624,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);                       
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha384_ctx_fat_v));    
     struct sha384_ctx_fat_v *ctx_new = (struct sha384_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -669,8 +669,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);     
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha384_ctx_fat_v));    
     struct sha384_ctx_fat_v *ctx_new = (struct sha384_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -721,8 +721,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha512_ctx_fat_v));    
     struct sha512_ctx_fat_v *ctx_new = (struct sha512_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -754,8 +754,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);                       
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha512_ctx_fat_v));    
     struct sha512_ctx_fat_v *ctx_new = (struct sha512_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -799,8 +799,8 @@ struct sha512_ctx_org
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint64_t *sz = (uint64_t*)(sz_fpr & 0xffffffff);     
-    uint32_t *buf = (uint32_t*)(buf_fpr & 0xffffffff);                       
-    uint8_t *h = (uint8_t*)(h_fpr & 0xffffffff);                             
+    uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);
+    uint32_t *h = (uint32_t*)(h_fpr & 0xffffffff);
                                                                              
     __int128 ctx_new_fpr = safemalloc(sizeof(struct sha512_ctx_fat_v));    
     struct sha512_ctx_fat_v *ctx_new = (struct sha512_ctx_fat_v*)(ctx_new_fpr & 0xffffffff); 
@@ -868,7 +868,7 @@ struct sha512_ctx_org
       printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
     
 
-    return Val_unit;                                                         
+    return Val_unit;
   }
 
 
