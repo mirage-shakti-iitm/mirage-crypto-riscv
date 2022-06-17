@@ -439,7 +439,9 @@ struct sha256_ctx_org
   CAMLprim value                                                             
   mc_sha256_init (value ctx) {                                         
     struct sha256_ctx_org *ctx_org = (struct sha256_ctx_org*) Bytes_val (ctx);  
-                                                                             
+                
+
+                                                           
     __int128 buf_fpr = safemalloc(128*sizeof(uint8_t));                      
     __int128 h_fpr = safemalloc(8*sizeof(uint32_t));                         
     uint8_t *buf = (uint8_t*)(buf_fpr & 0xffffffff);                       
@@ -464,11 +466,11 @@ struct sha256_ctx_org
 
 
 
-    printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
-    for(int i=0; i<8; i++)
-      printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
-    for(int i=0; i<128; i++)
-      printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
+    // printf("sha256 : ctx_org->sz = %d\n", ctx_org->sz);
+    // for(int i=0; i<8; i++)
+      // printf("sha256 : ctx_org->h[%d] = %x\n", i, ctx_org->h[i]);
+    // for(int i=0; i<128; i++)
+      // printf("sha256 : ctx_org->buf[%d] = %x\n", i, ctx_org->h[i]);
     
 
     return Val_unit;                                                         
