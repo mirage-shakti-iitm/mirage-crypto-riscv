@@ -16,7 +16,7 @@ CC = clang
 AR = riscv64-unknown-elf-gcc-ar
 FREESTANDING_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags ocaml-freestanding-riscv) --gcc-toolchain=${RISCV} -march=rv64gc
 MIRAGE_CRYPTO_OPT_CFLAGS := $(shell sed 's/^(\(.*\))$$/\1/' ../src/cflags_optimized.sexp | tr -d '"')
-# COMPARTMENT_FLAGS=-mllvm -enable-compartment-pass -mllvm -default-compartment-id -mllvm 1 -ffunction-sections
+COMPARTMENT_FLAGS=-mllvm -enable-compartment-pass -mllvm -default-compartment-id -mllvm 1 -ffunction-sections
 # poly1305-donna.c, chacha.c, chacha_generic.c, hash_stubs.c, des_generic.c, des_generic.h, aes_aesni.c, misc_sse.c, ghash_pclmul.c
 SHAKTI_MS_FLAGS=-mllvm -enable-shakti-ms -mllvm -ignore-files-shakti-ms -mllvm aes_aesni.c,chacha.c,ghash_ctmul.c,hash_stubs.c,chacha_generic.c,detect_cpu_features.c,poly1305-donna-64.h,des_generic.c,ghash_pclmul.c,misc_sse.c,poly1305-donna.c,entropy_cpu_stubs.c -fno-inline-functions -DFREESTANDING_CRYPTO
 CFLAGS := -I../src/native $(MIRAGE_CRYPTO_OPT_CFLAGS) $(FREESTANDING_CFLAGS) $(SHAKTI_MS_FLAGS) -I$(OCAML_RISCV_PATH) -I$(OCAML_BOOT_RISCV_PATH)  -I$(OCAML_FREESTANDING_RISCV_PATH)
