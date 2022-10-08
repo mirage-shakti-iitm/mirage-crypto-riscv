@@ -288,7 +288,7 @@ void _mc_sha256_update(struct sha256_ctx *ctx, uint8_t *data, uint32_t len)
 	/* append data into buf */
 	if (len)
 		memcpy(ctx->buf + index, data, len);
-	printf("update_len : %d\n", len);
+	// printf("update_len : %d\n", len);
 }
 
 void _mc_sha224_finalize(struct sha224_ctx *ctx, uint8_t *out)
@@ -321,5 +321,5 @@ void _mc_sha256_finalize(struct sha256_ctx *ctx, uint8_t *out)
 	for (i = 0; i < 8; i++)
 		p[i] = cpu_to_be32(ctx->h[i]);
 
-	printf("finalize : %d\n", padlen);
+	// printf("finalize : %d\n", padlen);
 }
