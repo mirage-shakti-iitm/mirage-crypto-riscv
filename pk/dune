@@ -3,7 +3,7 @@
  (public_name mirage-crypto-pk)
  (libraries cstruct zarith mirage-crypto mirage-crypto-rng sexplib
    eqaf.cstruct rresult)
- (ocamlopt_flags (-default-compartment-id 1 -function-sections))
+ (ocamlopt_flags (-default-compartment-id 2 -function-sections))
  (preprocess
   (pps ppx_sexp_conv))
  (private_modules common dh dsa rsa z_extra))
