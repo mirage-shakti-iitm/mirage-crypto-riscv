@@ -1,4 +1,6 @@
-let std_flags = ["--std=c99"; "-Wall"; "-Wextra"; "-Wpedantic"; "-O3"; "-mcmodel=medany"; "-I/home/sai/.opam/4.11.1+riscv/riscv-sysroot/include/ocaml-boot-riscv"]
+let flag_path = "-I" ^ (Sys.getenv "OPAM_SWITCH_PREFIX") ^ "/riscv-sysroot/include/ocaml-boot-riscv"
+
+let std_flags = ["--std=c99"; "-Wall"; "-Wextra"; "-Wpedantic"; "-O3"; "-mcmodel=medany"; flag_path]
 
 let () =
   let c = Configurator.V1.create "mirage-crypto" in
