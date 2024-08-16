@@ -2,4 +2,5 @@
  (name mirage_crypto_rng)
  (public_name mirage-crypto-rng)
  (libraries cstruct mirage-crypto)
+ (ocamlopt_flags (-g -default-compartment-id 5 -function-sections))
  (private_modules entropy fortuna hmac_drbg rng))

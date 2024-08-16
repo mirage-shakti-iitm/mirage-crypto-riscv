@@ -4,6 +4,7 @@
  (libraries cstruct eqaf.cstruct)
  (private_modules aead chacha20 ccm cipher_block cipher_stream hash native
    poly1305 uncommon)
+ (ocamlopt_flags (-g -default-compartment-id 5 -function-sections))
  (foreign_stubs
   (language c)
   (names detect_cpu_features misc misc_sse md5 sha1 sha256 sha512 hash_stubs

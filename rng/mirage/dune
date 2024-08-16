@@ -1,5 +1,6 @@
 (library
  (name mirage_crypto_rng_mirage)
  (public_name mirage-crypto-rng-mirage)
+ (ocamlopt_flags (-g -default-compartment-id 5 -function-sections))
  (libraries cstruct lwt mirage-runtime mirage-crypto-rng mirage-time
    mirage-clock duration logs))
